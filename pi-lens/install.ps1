@@ -1,4 +1,4 @@
-# pi-codex-kit — pi-lens standalone installer (Windows)
+﻿# pi-codex-kit - pi-lens standalone installer (Windows)
 #
 # Installs pi-lens@3.8.71 as a SELF-CONTAINED npm package under
 # ~/.codex/vendor/pi-lens (no linkage to ~/.pi). Adds typescript-language-server
@@ -20,7 +20,7 @@ Write-Output "node: $nodeVer"
 
 # 2. Install (skip if server already present and smoke-tested)
 if (Test-Path $ServerJs) {
-    Write-Output "pi-lens already installed at $ServerJs — skipping npm install."
+    Write-Output "pi-lens already installed at $ServerJs - skipping npm install."
 } else {
     New-Item -ItemType Directory -Force -Path $VendorRoot | Out-Null
     Push-Location $VendorRoot

@@ -1,4 +1,4 @@
-# pi-codex-kit — Windows orchestrator
+﻿# pi-codex-kit - Windows orchestrator
 #
 # Applies the kit to this machine. ADDITIVE and idempotent per the AGENT
 # CONTRACT in README.md. Phases that touch ~/.codex and ~/.cc-switch are
@@ -44,7 +44,7 @@ foreach ($cand in @('rtk.exe', (Join-Path $HOME '.local\bin\rtk.exe'))) {
   $cmd = Get-Command $cand -ErrorAction SilentlyContinue
   if ($cmd) { $rtk = $cmd.Source; break }
 }
-if ($rtk) { Write-Output "rtk: $rtk" } else { Write-Warning "rtk not found — the PreToolUse hook will no-op until rtk is installed." }
+if ($rtk) { Write-Output "rtk: $rtk" } else { Write-Warning "rtk not found - the PreToolUse hook will no-op until rtk is installed." }
 
 if (-not (Test-Path $ConfigToml)) { Write-Warning "no $ConfigToml yet; MCP append will create it." }
 
@@ -80,7 +80,9 @@ if ($SkipHooks) {
   $tpl = Get-Content (Join-Path $KitRoot 'codex-config\hooks.template.json') -Raw
   $rendered = $tpl -replace '\{\{CODEX_HOOKS_DIR\}\}', $hooksFwd
   $renderedPath = Join-Path $env:TEMP 'pi-codex-kit-hooks.rendered.json'
-  Set-Content -Path $renderedPath -Value $rendered -Encoding utf8
+  # Write UTF-8 WITHOUT BOM (Set-Content -Encoding utf8 adds a BOM on PS 5.1,
+  # which breaks JSON.parse in the merge script).
+  [System.IO.File]::WriteAllText($renderedPath, $rendered, (New-Object System.Text.UTF8Encoding $false))
 
   & node (Join-Path $KitRoot 'scripts\merge-hooks.mjs') --target $HooksJson --template $renderedPath
   if ($LASTEXITCODE -ne 0) { throw "merge-hooks failed." }
@@ -93,7 +95,7 @@ if ($SkipSkills) {
   Write-Output "`n[4/5] skills: SKIPPED"
 } else {
   Write-Output "`n[4/5] Copying skills into cc-switch SSOT ($CcSkills)..."
-  if (-not (Test-Path $CcSkills)) { throw "cc-switch skills dir not found: $CcSkills — is cc-switch installed?" }
+  if (-not (Test-Path $CcSkills)) { throw "cc-switch skills dir not found: $CcSkills - is cc-switch installed?" }
   $srcSkills = Join-Path $KitRoot 'skills'
   foreach ($dir in Get-ChildItem $srcSkills -Directory) {
     $dest = Join-Path $CcSkills $dir.Name

@@ -26,13 +26,18 @@ if (!target || !template) {
   process.exit(1);
 }
 
-const tpl = JSON.parse(fs.readFileSync(template, "utf8"));
+/** Strip a UTF-8 BOM if present (PowerShell 5.1 Set-Content -Encoding utf8 emits one). */
+function stripBom(s) {
+  return s.charCodeAt(0) === 0xfeff ? s.slice(1) : s;
+}
+
+const tpl = JSON.parse(stripBom(fs.readFileSync(template, "utf8")));
 
 let existing = { hooks: {} };
 let hadFile = false;
 if (fs.existsSync(target)) {
   hadFile = true;
-  existing = JSON.parse(fs.readFileSync(target, "utf8"));
+  existing = JSON.parse(stripBom(fs.readFileSync(target, "utf8")));
   if (!existing.hooks || typeof existing.hooks !== "object") existing.hooks = {};
   // Backup before editing.
   const ts = new Date().toISOString().replace(/[:.]/g, "-");
