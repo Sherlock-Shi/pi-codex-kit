@@ -1,0 +1,6 @@
+interface:
+  display_name: "pi-lens-lsp-navigation"
+  short_description: "Navigate code with IDE features and run proactive LSP diagnostics on files/folders/batches. Use as PRIMARY for code inte"
+
+policy:
+  allow_implicit_invocation: true

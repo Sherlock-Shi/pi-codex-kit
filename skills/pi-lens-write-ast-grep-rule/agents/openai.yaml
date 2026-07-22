@@ -1,0 +1,6 @@
+interface:
+  display_name: "pi-lens-write-ast-grep-rule"
+  short_description: "Use when writing a new pi-lens ast-grep rule YAML file — covers schema, drop path, gotchas, and NAPI runner constraints"
+
+policy:
+  allow_implicit_invocation: true

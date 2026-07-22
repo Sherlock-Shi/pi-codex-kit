@@ -1,0 +1,7 @@
+interface:
+  display_name: "Simplify Changed Code"
+  short_description: "Review and simplify recently changed code, scoped to the diff"
+  default_prompt: "Use $simplify to review and simplify the code I just changed."
+
+policy:
+  allow_implicit_invocation: true

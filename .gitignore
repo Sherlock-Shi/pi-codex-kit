@@ -1,0 +1,10 @@
+node_modules/
+*.log
+*.bak
+*.bak.*
+backups/
+.DS_Store
+Thumbs.db
+# rendered per-machine artifacts (never commit absolute paths)
+.codex-rendered/
+*.rendered.json

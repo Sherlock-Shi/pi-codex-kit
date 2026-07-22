@@ -1,0 +1,6 @@
+interface:
+  display_name: "develop-tdd"
+  short_description: "Test-driven development with red-green-refactor loop using vertical slices. Use for features (epic tasks) or bugs (specs"
+
+policy:
+  allow_implicit_invocation: true

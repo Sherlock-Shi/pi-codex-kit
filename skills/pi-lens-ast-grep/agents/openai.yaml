@@ -1,0 +1,6 @@
+interface:
+  display_name: "pi-lens-ast-grep"
+  short_description: "Use when searching or replacing code patterns - use ast-grep instead of text search for semantic accuracy"
+
+policy:
+  allow_implicit_invocation: true

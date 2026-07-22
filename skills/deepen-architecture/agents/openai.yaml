@@ -1,0 +1,6 @@
+interface:
+  display_name: "deepen-architecture"
+  short_description: "Find deepening opportunities in a codebase, informed by the domain language in specs/tech-architecture/tech-stack.md and"
+
+policy:
+  allow_implicit_invocation: true

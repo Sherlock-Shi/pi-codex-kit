@@ -1,0 +1,6 @@
+interface:
+  display_name: "verify-work"
+  short_description: "Multi-phase UAT gate — cold-start smoke, build, typecheck, lint, tests, step-by-step manual verification, gaps-closure l"
+
+policy:
+  allow_implicit_invocation: true

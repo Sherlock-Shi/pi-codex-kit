@@ -1,0 +1,6 @@
+interface:
+  display_name: "enforce-first"
+  short_description: "Apply the F.I.R.S.T test quality rubric (per CONVENTIONS.md §Tests) to a test suite or individual tests. Use when develo"
+
+policy:
+  allow_implicit_invocation: true

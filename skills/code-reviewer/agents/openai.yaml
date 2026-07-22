@@ -1,0 +1,6 @@
+interface:
+  display_name: "code-reviewer"
+  short_description: "Use this skill to review code. It supports both local changes (staged or working tree)"
+
+policy:
+  allow_implicit_invocation: true

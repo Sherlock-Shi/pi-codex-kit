@@ -1,0 +1,6 @@
+interface:
+  display_name: "fp-check"
+  short_description: "Systematically verifies suspected security bugs to eliminate false positives. Produces TRUE POSITIVE or FALSE POSITIVE v"
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,6 @@
+interface:
+  display_name: "variant-analysis"
+  short_description: "Find similar vulnerabilities and bugs across codebases using pattern-based analysis. Use when hunting bug variants, buil"
+
+policy:
+  allow_implicit_invocation: true

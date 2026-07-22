@@ -1,0 +1,6 @@
+interface:
+  display_name: "differential-review"
+  short_description: ">"
+
+policy:
+  allow_implicit_invocation: true

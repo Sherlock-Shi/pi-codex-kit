@@ -1,0 +1,12 @@
+# REFERENCE ONLY — do not paste this whole file into config.toml.
+#
+# The installer adds exactly this block ADDITIVELY via scripts/append-mcp.mjs,
+# which backs up config.toml first and no-ops if [mcp_servers.pi-lens] exists.
+# {{PI_LENS_SERVER_JS}} is replaced with the per-machine absolute path to
+# ~/.codex/vendor/pi-lens/node_modules/pi-lens/dist/mcp/server.js
+# (forward slashes, so no TOML escaping is needed).
+
+[mcp_servers.pi-lens]
+command = "node"
+args = ["{{PI_LENS_SERVER_JS}}"]
+startup_timeout_sec = 30

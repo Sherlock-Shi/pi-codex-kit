@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"{{CODEX_HOOKS_DIR}}/rtk-pretooluse.mjs\"",
+            "timeout": 10,
+            "statusMessage": "RTK token optimization"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "apply_patch|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"{{CODEX_HOOKS_DIR}}/lens-reminder.mjs\"",
+            "timeout": 10,
+            "statusMessage": "pi-lens reminder"
+          }
+        ]
+      }
+    ]
+  }
+}

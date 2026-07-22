@@ -1,0 +1,6 @@
+interface:
+  display_name: "pi-lens-write-tree-sitter-rule"
+  short_description: "Use when writing a new pi-lens tree-sitter query rule YAML file — covers schema, S-expression syntax, capture names, pre"
+
+policy:
+  allow_implicit_invocation: true

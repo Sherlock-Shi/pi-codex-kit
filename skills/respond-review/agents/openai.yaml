@@ -1,0 +1,6 @@
+interface:
+  display_name: "respond-review"
+  short_description: "Act on a reviewer agent's feedback systematically — categorize findings, apply fixes, verify tests still pass. Use after"
+
+policy:
+  allow_implicit_invocation: true
