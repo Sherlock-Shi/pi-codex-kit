@@ -59,12 +59,12 @@ pi-codex-kit/
 
 Any agent (or human) applying this kit to a machine **must** obey:
 
-1. **ADD, NEVER REPLACE.** `~/.codex/config.toml` holds the user's providers, plugins, marketplaces, and project-trust settings. Only **add** a `[mcp_servers.pi-lens]` block. Never rewrite, reformat, reorder, or regenerate the file.
-2. **Prefer the provided scripts.** `scripts/append-mcp.mjs` and `scripts/merge-hooks.mjs` are additive and idempotent. `codex mcp add` is the theoretical primary path but is currently **blocked by a pre-existing config parse error** (see Known Issues) — use the scripts.
-3. **Always back up first.** Both scripts copy `config.toml` / `hooks.json` to `*.bak.<timestamp>` before editing.
+1. **ADD, NEVER REPLACE.** `~/.codex/config.toml` holds the user's providers, plugins, marketplaces, and project-trust settings. **The installer never modifies it.** MCP registration is a manual paste step: the installer prints the exact `[mcp_servers.pi-lens]` block and the user adds it by hand. Never rewrite, reformat, reorder, or regenerate the file.
+2. **Scripts are opt-in helpers only.** `scripts/append-mcp.mjs` and `scripts/merge-hooks.mjs` are additive and idempotent, but only `merge-hooks.mjs` (hooks.json) is run by the installer. `append-mcp.mjs` (config.toml) is never invoked automatically — it exists for users who explicitly want scripted insertion.
+3. **Backups.** `merge-hooks.mjs` backs up `hooks.json` before editing. If you ever use `append-mcp.mjs` manually, it backs up `config.toml` first.
 4. **Be idempotent.** Both scripts check whether the entry already exists and no-op if so. Re-running install must be safe.
-5. **Verify after.** Diff the file against its backup — the only change must be the appended block/entries. Run `scripts/mcp-smoke.mjs` against the installed server.
-6. **Rollback.** Delete the appended block (or restore the `.bak`), remove `~/.codex/hooks/*.mjs`, and delete `~/.codex/vendor/pi-lens/`.
+5. **Verify after.** For any manual config.toml edit, diff against a backup — the only change should be the block you added. Run `scripts/mcp-smoke.mjs` against the installed server.
+6. **Rollback.** Remove the `[mcp_servers.pi-lens]` block you pasted, remove `~/.codex/hooks/*.mjs` + their `hooks.json` entries, and delete `~/.codex/vendor/pi-lens/`.
 
 ---
 
@@ -95,16 +95,23 @@ cd ~/dev/pi-codex-kit
 
 The orchestrator runs these phases:
 
-1. **Pre-flight** — node / git / rtk checks; backs up `~/.codex/config.toml` + `hooks.json`.
+1. **Pre-flight** — node / git / rtk checks.
 2. **pi-lens runtime** — `npm install --omit=peer pi-lens@3.8.71 typescript-language-server` into `~/.codex/vendor/pi-lens` (self-contained; native modules built per machine, never synced).
 3. **MCP smoke test** — `scripts/mcp-smoke.mjs` confirms the server starts and lists its 16 `pilens_*` tools.
-4. **MCP registration** — `scripts/append-mcp.mjs` additively appends `[mcp_servers.pi-lens]`.
-5. **Hooks** — copies `hooks/*.mjs` to `~/.codex/hooks/`, merges `hooks.json` additively.
+4. **MCP registration (manual)** — the installer PRINTS the exact `[mcp_servers.pi-lens]` block; **you paste it into `~/.codex/config.toml` yourself**. The installer never touches config.toml.
+5. **Hooks** — copies `hooks/*.mjs` to `~/.codex/hooks/`, merges `hooks.json` additively (with backup).
 6. **Skills → cc-switch SSOT** — copies `skills/*` into `~/.cc-switch/skills/` (skips existing names).
 7. **Manual finish** — prints the remaining UI steps (below).
 
 ### Manual finish (both platforms)
 
+- **Paste the MCP block** the installer printed into `~/.codex/config.toml` (top level):
+  ```toml
+  [mcp_servers.pi-lens]
+  command = "node"
+  args = ["<path the installer printed>"]
+  startup_timeout_sec = 30
+  ```
 - In **cc-switch**: install each new skill **to Codex** (symlink mode) so they land in `~/.codex/skills/`.
 - In **cc-switch prompt manager**: **append** `agents-md/coding-glue.md` to your AGENTS.md (do not replace the academic-writing section).
 - In **Codex**: run `/hooks` and **trust** the two new hooks (one-time per machine).
@@ -116,7 +123,7 @@ The orchestrator runs these phases:
 | Check | Pass criterion |
 |---|---|
 | rtk hook | `echo '{"tool_name":"Bash","tool_input":{"command":"git status"}}' \| node ~/.codex/hooks/rtk-pretooluse.mjs` → prints `updatedInput.command = "rtk git status"` |
-| pi-lens MCP | `node scripts/mcp-smoke.mjs <server.js>` → `ok:true`, 16 tools incl. `pilens_session_start`, `pilens_turn_end` |
+| pi-lens MCP | `node scripts/mcp-smoke.mjs <server.js>` → `ok:true`, 16 tools incl. `pilens_session_start`, `pilens_turn_end`; after you paste the block, Codex `/mcp` shows pi-lens connected |
 | config integrity | diff `config.toml` vs its `.bak` → only the `[mcp_servers.pi-lens]` block added |
 | skills | Codex `/skills` lists `simplify`, `pi-lens-*`, curated; `$simplify` on a dirty tree runs the script + scoped review |
 | no pi linkage | no `~/.pi` references in `~/.codex/config.toml` or `hooks.json`; vendor dir self-contained |
@@ -130,7 +137,7 @@ The orchestrator runs these phases:
 
 ## Rollback
 
-- MCP: remove the `[mcp_servers.pi-lens]` block (or restore `config.toml.bak.*`).
+- MCP: remove the `[mcp_servers.pi-lens]` block you pasted into config.toml.
 - Hooks: delete `~/.codex/hooks/rtk-pretooluse.mjs` + `lens-reminder.mjs`, remove their entries from `hooks.json` (or restore backup).
 - pi-lens runtime: delete `~/.codex/vendor/pi-lens/`.
 - Skills: uninstall in cc-switch (moves them to `skill-backups/`).

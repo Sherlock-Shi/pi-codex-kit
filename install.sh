@@ -42,13 +42,23 @@ else
   bash "$KIT_ROOT/pi-lens/install.sh"
 fi
 
-# ---- Phase 2: MCP registration (additive) --------------------------------
+# ---- Phase 2: MCP registration (MANUAL - config.toml is never modified) ---
 if [ "${SKIP_MCP:-0}" = "1" ]; then
   echo; echo "[2/5] MCP registration: SKIPPED"
 else
-  echo; echo "[2/5] Registering pi-lens MCP server (additive append)..."
-  [ -f "$SERVER_JS" ] || { echo "server.js missing: $SERVER_JS (run without SKIP_PILENS first)." >&2; exit 1; }
-  node "$KIT_ROOT/scripts/append-mcp.mjs" --config "$CONFIG_TOML" --server "$SERVER_JS"
+  echo; echo "[2/5] MCP registration (manual step - this installer does NOT modify config.toml):"
+  if [ ! -f "$SERVER_JS" ]; then
+    echo "  WARN: server.js not found yet: $SERVER_JS (run phase 1 first, then re-run with SKIP_PILENS=1)." >&2
+  else
+    echo "  Add this block to $CONFIG_TOML (anywhere at top level):"
+    echo ""
+    echo "      [mcp_servers.pi-lens]"
+    echo "      command = \"node\""
+    echo "      args = [\"$SERVER_JS\"]"
+    echo "      startup_timeout_sec = 30"
+    echo ""
+    echo "  (scripts/append-mcp.mjs exists as an OPTIONAL manual helper if you ever want scripted insertion; the installer never runs it.)"
+  fi
 fi
 
 # ---- Phase 3: hooks -------------------------------------------------------

@@ -57,14 +57,24 @@ if ($SkipPilens) {
   if ($LASTEXITCODE -ne 0) { throw "pi-lens install failed." }
 }
 
-# ---- Phase 2: MCP registration (additive) --------------------------------
+# ---- Phase 2: MCP registration (MANUAL - config.toml is never modified) ---
 if ($SkipMcp) {
   Write-Output "`n[2/5] MCP registration: SKIPPED"
 } else {
-  Write-Output "`n[2/5] Registering pi-lens MCP server (additive append)..."
-  if (-not (Test-Path $ServerJs)) { throw "server.js missing: $ServerJs (run without -SkipPilens first)." }
-  & node (Join-Path $KitRoot 'scripts\append-mcp.mjs') --config $ConfigToml --server $ServerJs
-  if ($LASTEXITCODE -ne 0) { throw "append-mcp failed." }
+  Write-Output "`n[2/5] MCP registration (manual step - this installer does NOT modify config.toml):"
+  if (-not (Test-Path $ServerJs)) {
+    Write-Warning "server.js not found yet: $ServerJs (run phase 1 first, then re-run with -SkipPilens)."
+  } else {
+    $serverFwd = ToForwardSlash $ServerJs
+    Write-Output "  Add this block to $ConfigToml (anywhere at top level):"
+    Write-Output ""
+    Write-Output "      [mcp_servers.pi-lens]"
+    Write-Output ('      command = "node"')
+    Write-Output ('      args = ["' + $serverFwd + '"]')
+    Write-Output "      startup_timeout_sec = 30"
+    Write-Output ""
+    Write-Output "  (scripts/append-mcp.mjs exists as an OPTIONAL manual helper if you ever want scripted insertion; the installer never runs it.)"
+  }
 }
 
 # ---- Phase 3: hooks -------------------------------------------------------
