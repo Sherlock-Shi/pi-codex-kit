@@ -1,5 +1,7 @@
 # pi-codex-kit
 
+**Version: 1.0.0** — [semver](https://semver.org/): each `feat:` → minor bump; breaking changes → major bump.
+
 Portable, **additive** Codex enhancement kit migrated from the pi coding agent. Gives OpenAI Codex the same code-tightening, code-quality, and token-saving behavior — with **zero linkage to `~/.pi`** and **no forced installation**.
 
 Everything here is self-serve: browse the directory you need, follow its README, copy-paste. Nothing modifies your existing Codex environment unless you explicitly add it.
