@@ -16,7 +16,8 @@ Codex skills (slash-command workflows) for code review, TDD, security analysis, 
 | `enforce-first` | Apply the F.I.R.S.T test quality rubric to a test suite or individual tests. |
 | `fp-check` | Verify suspected security bugs to eliminate false positives with documented evidence. |
 | `harness-review` | Assess project readiness for AI coding-agent work across five dimensions. |
-| `llm-wiki` | Build and maintain a persistent, structured knowledge base from raw sources. |
+| `knowledge-engine` | Generate and maintain a structured knowledge base (Repo Wiki + Knowledge Cards) for a codebase with drift detection and incremental updates. |
+| `llm-wiki` | Build and maintain a persistent, structured knowledge base from raw sources (general-purpose research wiki). |
 | `pi-lens-ast-grep` | Search/replace code patterns using ast-grep for semantic accuracy via pi-lens MCP. |
 | `pi-lens-lsp-navigation` | Navigate code with IDE features and run proactive LSP diagnostics via pi-lens MCP. |
 | `pi-lens-write-ast-grep-rule` | Write new pi-lens ast-grep rule YAML files (schema, drop path, NAPI constraints). |
@@ -63,6 +64,7 @@ Open Codex and run `/skills` — your installed skills should appear in the list
 ## Notes
 
 - The `pi-lens-*` skills require the pi-lens MCP server (local-only, no network at runtime). See `../mcp-servers/README.md` and `../mcp-servers/SECURITY.md`.
+- The `knowledge-engine` skill requires the wiki-server MCP (v2). See `../mcp-servers/wiki-server/README.md`.
 - Skills are purely additive — copying a new folder never affects existing skills.
 
 ## Rollback

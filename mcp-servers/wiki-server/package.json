@@ -1,7 +1,7 @@
 {
   "name": "wiki-server",
-  "version": "1.0.0",
-  "description": "Persistent knowledge-base MCP server — SQLite + FTS5 + local vector embeddings. Part of pi-codex-kit.",
+  "version": "2.0.0",
+  "description": "Persistent knowledge-base MCP server — SQLite + FTS5 + local vector embeddings + Knowledge Engine (project scanning, knowledge cards, drift detection). Part of pi-codex-kit.",
   "type": "module",
   "main": "server.mjs",
   "bin": {

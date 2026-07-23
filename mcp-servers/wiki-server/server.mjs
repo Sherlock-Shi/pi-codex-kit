@@ -15,7 +15,7 @@ import { TOOLS, handleToolCall } from "./lib/tools.mjs";
 console.log = (...args) => console.error(...args);
 
 const SERVER_NAME = "wiki-server";
-const SERVER_VERSION = "1.0.0";
+const SERVER_VERSION = "2.0.0";
 const PROTOCOL_VERSION = "2025-06-18";
 
 function send(message) {

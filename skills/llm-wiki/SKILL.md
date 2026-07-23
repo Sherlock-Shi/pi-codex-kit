@@ -1,9 +1,11 @@
 ---
 name: llm-wiki
-description: "Build and maintain a persistent, structured knowledge base (wiki) from raw sources. The LLM incrementally ingests, cross-references, and synthesizes information into interlinked markdown pages. Use when the user wants to build a wiki, ingest a source, query accumulated knowledge, or lint the knowledge base for health."
+description: "Build and maintain a persistent, structured knowledge base (wiki) from raw sources. The LLM incrementally ingests, cross-references, and synthesizes information into interlinked markdown pages. Use when the user wants to build a general-purpose research wiki, ingest a source, query accumulated knowledge, or lint the knowledge base for health. For codebase-aware knowledge generation (module trees, knowledge cards, drift detection), use the knowledge-engine skill instead."
 ---
 
 # LLM Wiki
+
+> **Note:** For **codebase knowledge generation** (auto-generating module-aware documentation, knowledge cards, drift detection, and incremental updates), use the **`knowledge-engine`** skill instead. This skill remains for **general-purpose research wikis** built from arbitrary sources (articles, papers, notes).
 
 Build and maintain a persistent, compounding knowledge base. Instead of re-deriving knowledge from raw documents on every question (RAG-style), incrementally build a structured, interlinked wiki that accumulates synthesis over time.
 
