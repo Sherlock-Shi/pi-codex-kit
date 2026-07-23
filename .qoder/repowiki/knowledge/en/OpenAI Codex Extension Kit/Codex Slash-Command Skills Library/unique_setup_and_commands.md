@@ -1,1 +1,0 @@
-Install by copying a skill directory into `~/.codex/skills/` (or `~/.cc-switch/skills/` then symlink via cc-switch); verify with `/skills` in Codex and invoke with `$skill-name`. The `pi-lens-*` skills additionally require the pi-lens MCP server installed per `../mcp-servers/README.md`.

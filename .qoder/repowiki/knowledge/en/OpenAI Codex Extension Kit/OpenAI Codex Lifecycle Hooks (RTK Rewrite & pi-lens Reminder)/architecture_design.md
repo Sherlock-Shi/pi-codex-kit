@@ -1,5 +1,0 @@
-Two independent, single-purpose CLI scripts invoked by Codex's hook matcher system — no shared library or package manifest between them:
-- `rtk-pretooluse.mjs` — PreToolUse hook for the `Bash` tool. Reads a JSON event from stdin, locates the `rtk` binary via `RTK_BIN`, PATH, then well-known install dirs (`~/.local/bin`, `/opt/homebrew/bin`, `/usr/local/bin`), calls `rtk rewrite <command>` through `spawnSync` with a 5s timeout, and on success writes back a `hookSpecificOutput` containing `updatedInput.command` plus an auto-allow permission decision. Falls back to the original command on any error.
-- `lens-reminder.mjs` — PostToolUse hook for `apply_patch|Edit|Write`. Parses the same stdin JSON and emits a model-visible `additionalContext` reminding the agent to run `pilens_analyze` before declaring done; can be disabled per-session via `CODEX_KIT_LENS_REMINDER=0`.
-
-Both scripts enforce a strict non-blocking contract: every error path exits 0 with no stdout so the original tool call is never blocked. They are pure side-effect-free transformers of the Codex hook event payload and are registered in `~/.codex/hooks.json` as separate `type: "command"` entries.

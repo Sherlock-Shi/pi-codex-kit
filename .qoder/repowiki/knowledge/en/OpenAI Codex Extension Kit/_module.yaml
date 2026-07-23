@@ -1,9 +1,0 @@
-schema_version: 1
-module_path: ""
-title: OpenAI Codex Extension Kit
-scope:
-    - README.md
-    - .gitignore
-source_files: []
-depends_on: []
-related_to: []

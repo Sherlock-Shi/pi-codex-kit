@@ -1,4 +1,0 @@
-- Each skill is a single directory containing a top-level `SKILL.md` with YAML frontmatter declaring `name`, `description`, and `allowed-tools`; any additional files are supporting references rather than executable code.
-- Every `SKILL.md` begins with a "Codex adaptation" block noting it was ported from a pi coding-agent skill and instructing the agent to ignore pi-only paths/tool names and use Codex equivalents instead.
-- Agent configuration is kept separate in `agents/openai.yaml` next to the skill's `SKILL.md`, decoupling model/runtime settings from the prompt content.
-- Skills that need auxiliary data organize it into named sibling directories (`references/`, `resources/codeql|semgrep/`, etc.) referenced by relative links from `SKILL.md` rather than embedding large artifacts inline.
