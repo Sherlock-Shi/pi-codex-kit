@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# pi-codex-kit — L3 Deep Scan pre-push security gate.
+#
+# Aligned with Qoder Security Tier L3: "recommended before push."
+# Runs semgrep on changed files and blocks push on HIGH-severity findings.
+#
+# Install:
+#   cp hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+#
+# Bypass (explicit override):
+#   git push --no-verify
+#
+# Requires: semgrep on PATH, node on PATH.
+
+set -euo pipefail
+
+# Detect the default branch (main or master)
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||' || echo "main")
+
+# Changed source files since merge-base
+MERGE_BASE=$(git merge-base HEAD "$DEFAULT_BRANCH" 2>/dev/null || echo "HEAD~1")
+CHANGED=$(git diff --name-only "$MERGE_BASE"..HEAD -- '*.py' '*.js' '*.ts' '*.jsx' '*.tsx' '*.go' '*.java' '*.rb' '*.rs' '*.php' '*.cs' 2>/dev/null || true)
+
+if [ -z "$CHANGED" ]; then
+  echo "[pi-codex-kit L3] No source files changed — skipping scan."
+  exit 0
+fi
+
+FILE_COUNT=$(echo "$CHANGED" | wc -l | tr -d ' ')
+echo "[pi-codex-kit L3] Scanning $FILE_COUNT changed file(s)..."
+
+# Check semgrep is available
+if ! command -v semgrep &>/dev/null; then
+  echo "[pi-codex-kit L3] WARNING: semgrep not found on PATH. Skipping L3 scan."
+  echo "  Install: pip install semgrep"
+  exit 0
+fi
+
+# Run semgrep (ERROR severity only for pre-push gate)
+FINDINGS=$(semgrep scan --config auto --json --metrics=off --severity ERROR $CHANGED 2>/dev/null || echo '{"results":[]}')
+
+# Count findings
+HIGH_COUNT=$(echo "$FINDINGS" | node -e "
+  const d = JSON.parse(require('fs').readFileSync(0, 'utf8'));
+  console.log((d.results || []).length);
+" 2>/dev/null || echo "0")
+
+if [ "$HIGH_COUNT" -gt 0 ]; then
+  echo ""
+  echo "[pi-codex-kit L3] BLOCKED: $HIGH_COUNT HIGH-severity finding(s). Fix before pushing."
+  echo ""
+  echo "$FINDINGS" | node -e "
+    const d = JSON.parse(require('fs').readFileSync(0, 'utf8'));
+    (d.results || []).forEach(r => {
+      console.log('  ' + r.path + ':' + (r.start||{}).line + '  ' + r.check_id);
+      console.log('    ' + ((r.extra||{}).message || '').slice(0, 100));
+    });
+  " 2>/dev/null
+  echo ""
+  echo "  Fix these findings, then push again."
+  echo "  Bypass with: git push --no-verify"
+  exit 1
+fi
+
+echo "[pi-codex-kit L3] OK: no HIGH-severity findings in changed files."
+exit 0

@@ -3,11 +3,11 @@ schema_version: 1
 locale: en-US
 branch: main
 nodes_managed: true
-exported_at: "2026-07-23T14:40:21Z"
+exported_at: "2026-07-23T15:06:20Z"
 modules:
     "":
-        dir_name: Codex Enhancement Kit (Hooks, Skills & MCP Server)
-        title: Codex Enhancement Kit (Hooks, Skills & MCP Server)
+        dir_name: OpenAI Codex Extension Kit
+        title: OpenAI Codex Extension Kit
         scope:
             - README.md
             - .gitignore

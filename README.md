@@ -1,6 +1,6 @@
 # pi-codex-kit
 
-**Version: 1.1.0** — [semver](https://semver.org/): each `feat:` → minor bump; breaking changes → major bump.
+**Version: 1.2.0** — [semver](https://semver.org/): each `feat:` → minor bump; breaking changes → major bump.
 
 Portable, **additive** Codex enhancement kit migrated from the pi coding agent. Gives OpenAI Codex the same code-tightening, code-quality, and token-saving behavior — with **zero linkage to `~/.pi`** and **no forced installation**.
 
@@ -76,6 +76,20 @@ This environment has standalone tooling that keeps generated code tight and futu
 #### Simplification review (simplify skill)
 - Before finishing a coding task or committing, run the `simplify` skill on the current diff. It scopes review to changed lines only.
 - Apply its principles: preserve functionality (tests must pass), follow this project's conventions, enhance clarity (reduce complexity/nesting, kill redundancy, better names, no nested ternaries), and maintain balance (readability over fewer lines; don't over-simplify or remove helpful abstractions).
+
+#### Security scanning (3-tier progressive model)
+
+Aligned with [Qoder Security](https://docs.qoder.com/qoder-security-guide) tiers:
+
+| Tier | Mechanism | When | Cost |
+|------|-----------|------|------|
+| **L1** Static Check | `hooks/security-l1.mjs` (PostToolUse) | Automatically after every code edit | Near-zero (regex) |
+| **L2** Lightweight Scan | `security-gate` skill (agent-elicited) | End of coding task | Low (semgrep diff-scoped) |
+| **L3** Deep Scan | `hooks/pre-push` + `security-gate` skill | Before push/deploy | Medium (semgrep cross-file) |
+
+- L1 fires automatically — catches eval, hardcoded secrets, SQL injection, XSS, disabled TLS.
+- L2 is recommended at task end — the agent (or lens-reminder hook) nudges when appropriate.
+- L3 blocks `git push` on HIGH findings — bypass with `git push --no-verify`.
 
 #### General code-tightness expectations
 - Prefer small, single-responsibility functions with descriptive names.

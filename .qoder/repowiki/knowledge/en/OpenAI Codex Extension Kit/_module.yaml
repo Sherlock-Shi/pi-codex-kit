@@ -1,6 +1,6 @@
 schema_version: 1
 module_path: ""
-title: Codex Enhancement Kit (Hooks, Skills & MCP Server)
+title: OpenAI Codex Extension Kit
 scope:
     - README.md
     - .gitignore

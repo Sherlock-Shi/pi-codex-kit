@@ -1,13 +1,15 @@
 # Hooks
 
-Codex lifecycle hooks that add token-saving shell rewrites and code-quality reminders. These are **additive** — they never modify your existing `hooks.json` entries.
+Codex lifecycle hooks for token-saving, code-quality, and progressive security scanning. These are **additive** — they never modify your existing `hooks.json` entries.
 
 ## What's here
 
 | File | Event | What it does |
 |------|-------|--------------|
-| `rtk-pretooluse.mjs` | `PreToolUse` (Bash) | Rewrites shell commands through [RTK](https://github.com/nickarora/rtk) for 60–90% token savings (e.g. `git status` → `rtk git status`). Non-blocking: if rtk is missing or errors, your original command runs unchanged. |
-| `lens-reminder.mjs` | `PostToolUse` (apply_patch/Edit/Write) | Injects a model-visible reminder to run `pilens_analyze` on edited files before declaring done. Disable per-session with `CODEX_KIT_LENS_REMINDER=0`. |
+| `rtk-pretooluse.mjs` | `PreToolUse` (Bash) | Rewrites shell commands through [RTK](https://github.com/rtk-ai/rtk) for 60–90% token savings (e.g. `git status` → `rtk git status`). Non-blocking: if rtk is missing or errors, your original command runs unchanged. |
+| `lens-reminder.mjs` | `PostToolUse` (apply_patch/Edit/Write) | Injects a reminder to run `pilens_analyze` on edited files. After 5+ edits, also nudges L2 security scan. Disable with `CODEX_KIT_LENS_REMINDER=0`. |
+| `security-l1.mjs` | `PostToolUse` (apply_patch/Edit/Write) | **L1 Static Check** — pattern-matches edited code for high-risk patterns (eval, hardcoded secrets, SQL injection, XSS). Near-zero cost, fires automatically. Disable with `CODEX_KIT_SECURITY_L1=0`. |
+| `pre-push` | Git `pre-push` | **L3 Deep Scan** — runs semgrep on changed files before push. Blocks on HIGH findings. Bypass: `git push --no-verify`. |
 
 ## Prerequisites
 
@@ -57,6 +59,12 @@ Add the following entries to `~/.codex/hooks.json`. **Merge** them into any exis
             "command": "node \"<HOOKS_DIR>/lens-reminder.mjs\"",
             "timeout": 10,
             "statusMessage": "pi-lens reminder"
+          },
+          {
+            "type": "command",
+            "command": "node \"<HOOKS_DIR>/security-l1.mjs\"",
+            "timeout": 5,
+            "statusMessage": "L1 security check"
           }
         ]
       }
@@ -65,7 +73,17 @@ Add the following entries to `~/.codex/hooks.json`. **Merge** them into any exis
 }
 ```
 
-### 3. Trust the hooks
+### 3. Install the pre-push git hook (L3)
+
+```bash
+# From your project root:
+cp <kit>/hooks/pre-push .git/hooks/pre-push
+chmod +x .git/hooks/pre-push   # macOS/Linux only
+```
+
+This blocks `git push` if semgrep finds HIGH-severity issues in changed files. Bypass with `git push --no-verify`.
+
+### 4. Trust the hooks
 
 Open Codex and run `/hooks` — you'll be prompted to trust the new hooks (one-time per machine).
 
@@ -79,5 +97,7 @@ Expected: JSON output with `updatedInput.command = "rtk git status"`. If rtk isn
 
 ## Disable / Rollback
 
+- **Disable L1 security check:** set `CODEX_KIT_SECURITY_L1=0` in your environment.
 - **Disable lens-reminder temporarily:** set `CODEX_KIT_LENS_REMINDER=0` in your environment.
-- **Remove entirely:** delete the two `.mjs` files from `~/.codex/hooks/` and remove their entries from `hooks.json` (or restore your backup).
+- **Remove pre-push gate:** delete `.git/hooks/pre-push` from your project.
+- **Remove entirely:** delete the hook files from `~/.codex/hooks/` and remove their entries from `hooks.json`.
