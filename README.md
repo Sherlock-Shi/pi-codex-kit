@@ -104,6 +104,29 @@ This environment has standalone tooling that keeps generated code tight and futu
 
 ---
 
+## Acknowledgments
+
+This kit adapts and builds upon the following works:
+
+| Component | Author / Source | License | What we adapted |
+|-----------|----------------|---------|------------------|
+| pi-lens MCP server | [Apostolos Mantzaris](https://github.com/apmantza/pi-lens) | MIT | Code-quality MCP integration (16 tools), hook reminder pattern |
+| LLM Wiki pattern | [Andrej Karpathy](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) | Public gist | Wiki architecture (raw/wiki/schema layers, ingest/query/lint operations) |
+| RTK (Rust Token Killer) | [rtk-ai/rtk](https://github.com/rtk-ai/rtk) | Apache-2.0 | Token-saving shell rewrite concept, PreToolUse hook pattern |
+| Deep modules / interface design | John Ousterhout, *A Philosophy of Software Design* | — | Vocabulary and principles in `deepen-architecture` and `develop-tdd` |
+| Seam / working effectively | Michael Feathers, *Working Effectively with Legacy Code* | — | Seam concept in `deepen-architecture` |
+| Clean Code heuristics (Ch 17) | Robert C. Martin, *Clean Code* | — | Audit checklist heuristics in `audit-code` |
+| F.I.R.S.T test rubric | Tim Ottinger & Jeffrey Langr (via Uncle Bob) | — | Test quality enforcement in `enforce-first` |
+| Semgrep | [Semgrep / r2c](https://semgrep.dev) | LGPL-2.1 | Security scanning engine wrapped by `semgrep-server` |
+| transformers.js | [Xenova / HuggingFace](https://github.com/xenova/transformers.js) | Apache-2.0 | Local embedding model runtime for `wiki-server` |
+| all-MiniLM-L6-v2 | [Sentence-Transformers](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) | Apache-2.0 | 384-dim embedding model for wiki vector search |
+| Semver versioning convention | [bigpowers](https://github.com/danielvm-git/bigpowers) by Daniel V. | — | Version policy (feat → minor, breaking → major, MVP → 1.0.0) |
+| TDD vertical slices | Kent Beck, *Test-Driven Development: By Example* | — | Red-green-refactor workflow in `develop-tdd` |
+
+All adaptations are restructured for standalone Codex use. No original code is copied verbatim — skills are rewritten as generic agent instructions.
+
+---
+
 ## Not included (deliberately)
 
 context-mode, pi-subagents, pi-dynamic-workflows, pi-hermes-memory, pi-permission-system — pi-internal APIs with no clean Codex equivalent.

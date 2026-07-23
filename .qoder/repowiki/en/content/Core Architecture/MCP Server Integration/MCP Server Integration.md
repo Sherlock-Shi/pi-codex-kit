@@ -5,6 +5,15 @@
 - [README.md](file://README.md)
 - [mcp-servers/README.md](file://mcp-servers/README.md)
 - [mcp-servers/SECURITY.md](file://mcp-servers/SECURITY.md)
+- [mcp-servers/wiki-server/README.md](file://mcp-servers/wiki-server/README.md)
+- [mcp-servers/wiki-server/server.mjs](file://mcp-servers/wiki-server/server.mjs)
+- [mcp-servers/wiki-server/lib/tools.mjs](file://mcp-servers/wiki-server/lib/tools.mjs)
+- [mcp-servers/wiki-server/lib/db.mjs](file://mcp-servers/wiki-server/lib/db.mjs)
+- [mcp-servers/wiki-server/lib/embeddings.mjs](file://mcp-servers/wiki-server/lib/embeddings.mjs)
+- [mcp-servers/semgrep-server/README.md](file://mcp-servers/semgrep-server/README.md)
+- [mcp-servers/semgrep-server/server.mjs](file://mcp-servers/semgrep-server/server.mjs)
+- [mcp-servers/semgrep-server/lib/tools.mjs](file://mcp-servers/semgrep-server/lib/tools.mjs)
+- [mcp-servers/semgrep-server/lib/scanner.mjs](file://mcp-servers/semgrep-server/lib/scanner.mjs)
 - [skills/README.md](file://skills/README.md)
 - [skills/verify-work/SKILL.md](file://skills/verify-work/SKILL.md)
 - [hooks/README.md](file://hooks/README.md)
@@ -12,10 +21,11 @@
 
 ## Update Summary
 **Changes Made**
-- Added comprehensive security guidelines section covering supply-chain and prompt-injection vetting
-- Updated cross-platform compatibility information for verify-work skill
-- Enhanced security considerations section with new security practices
-- Added platform-specific tool management guidance
+- Added comprehensive documentation for new Wiki Server implementation with knowledge base capabilities
+- Added detailed coverage of Semgrep Server integration for security scanning
+- Enhanced mcp-servers ecosystem overview with expanded server catalog
+- Updated security documentation to cover new server implementations
+- Added practical examples of specialized MCP server architectures
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -23,22 +33,25 @@
 3. [Core Components](#core-components)
 4. [Architecture Overview](#architecture-overview)
 5. [Security Guidelines](#security-guidelines)
-6. [Detailed Component Analysis](#detailed-component-analysis)
-7. [Dependency Analysis](#dependency-analysis)
-8. [Performance Considerations](#performance-considerations)
-9. [Troubleshooting Guide](#troubleshooting-guide)
-10. [Conclusion](#conclusion)
-11. [Appendices](#appendices)
+6. [MCP Server Ecosystem](#mcp-server-ecosystem)
+7. [Detailed Component Analysis](#detailed-component-analysis)
+8. [Dependency Analysis](#dependency-analysis)
+9. [Performance Considerations](#performance-considerations)
+10. [Troubleshooting Guide](#troubleshooting-guide)
+11. [Conclusion](#conclusion)
+12. [Appendices](#appendices)
 
 ## Introduction
 
 The Model Context Protocol (MCP) serves as a standardized communication layer that enables seamless interoperability between Pi Codex Kit and external tools. This integration allows skills and agents within the Pi ecosystem to dynamically discover, connect to, and utilize external capabilities through a unified protocol interface.
 
-MCP provides a structured approach for tool discovery, connection management, and message serialization, ensuring that different components can communicate effectively regardless of their underlying implementation details. This document explains how MCP enables these interactions within the Pi Codex Kit architecture, with enhanced security considerations and cross-platform compatibility.
+MCP provides a structured approach for tool discovery, connection management, and message serialization, ensuring that different components can communicate effectively regardless of their underlying implementation details. The expanded MCP server ecosystem now includes specialized servers for knowledge management and security scanning, demonstrating the protocol's versatility in handling diverse use cases.
+
+This document explains how MCP enables these interactions within the Pi Codex Kit architecture, with enhanced security considerations, cross-platform compatibility, and comprehensive coverage of the growing server ecosystem including the new Wiki Server and Semgrep Server implementations.
 
 ## Project Structure
 
-The Pi Codex Kit repository is organized around several key areas that support MCP integration:
+The Pi Codex Kit repository is organized around several key areas that support MCP integration, with a significantly expanded server ecosystem:
 
 ```mermaid
 graph TB
@@ -53,34 +66,44 @@ E[MCP Client]
 F[Protocol Handlers]
 G[Security Framework]
 end
+subgraph "Specialized Servers"
+H[Wiki Server]
+I[Semgrep Server]
+J[Custom Servers]
+end
 subgraph "External Tools"
-H[Tool Registry]
-I[Service Discovery]
-J[Authentication Services]
+K[Tool Registry]
+L[Service Discovery]
+M[Authentication Services]
 end
 subgraph "Configuration"
-K[Skill Definitions]
-L[Agent Configs]
-M[Connection Settings]
-N[Security Policies]
+N[Skill Definitions]
+O[Agent Configs]
+P[Connection Settings]
+Q[Security Policies]
 end
 A --> D
 B --> E
 C --> F
 D --> G
-E --> H
-F --> J
-G --> N
-K --> D
-L --> E
-M --> F
+E --> K
+F --> M
+G --> Q
+N --> D
+O --> E
+P --> F
+H --> D
+I --> D
+J --> D
 ```
 
 **Diagram sources**
 - [README.md:1-50](file://README.md#L1-L50)
 - [mcp-servers/README.md:1-30](file://mcp-servers/README.md#L1-L30)
+- [mcp-servers/wiki-server/README.md:1-30](file://mcp-servers/wiki-server/README.md#L1-L30)
+- [mcp-servers/semgrep-server/README.md:1-30](file://mcp-servers/semgrep-server/README.md#L1-L30)
 
-The project follows a modular architecture where MCP functionality is distributed across multiple directories, each serving specific responsibilities in the overall system. The addition of comprehensive security guidelines ensures that all MCP integrations follow established security best practices.
+The project follows a modular architecture where MCP functionality is distributed across multiple directories, each serving specific responsibilities in the overall system. The addition of specialized servers demonstrates the protocol's extensibility for domain-specific use cases.
 
 **Section sources**
 - [README.md:1-100](file://README.md#L1-L100)
@@ -93,19 +116,33 @@ The project follows a modular architecture where MCP functionality is distribute
 The MCP server architecture consists of several interconnected components that work together to facilitate communication between Pi Codex Kit and external tools:
 
 #### Server Registration and Discovery
-- **Server Registry**: Maintains a catalog of available MCP servers
-- **Discovery Service**: Automatically detects and registers new servers
-- **Health Monitoring**: Tracks server availability and performance metrics
+- **Server Registry**: Maintains a catalog of available MCP servers including specialized implementations
+- **Discovery Service**: Automatically detects and registers new servers with capability negotiation
+- **Health Monitoring**: Tracks server availability and performance metrics across all server types
 
 #### Message Protocol Layer
-- **Serialization Engine**: Handles data format conversion between systems
-- **Message Router**: Directs messages to appropriate handlers
-- **Error Handler**: Manages error propagation and recovery
+- **Serialization Engine**: Handles data format conversion between systems with type safety
+- **Message Router**: Directs messages to appropriate handlers based on server capabilities
+- **Error Handler**: Manages error propagation and recovery with context preservation
 
 #### Connection Management
-- **Connection Pool**: Manages persistent connections to external services
-- **Authentication Manager**: Handles credential storage and validation
-- **Load Balancer**: Distributes requests across multiple server instances
+- **Connection Pool**: Manages persistent connections to external services with load balancing
+- **Authentication Manager**: Handles credential storage and validation with multi-factor support
+- **Load Balancer**: Distributes requests across multiple server instances with failover support
+
+### Specialized Server Implementations
+
+The MCP ecosystem now includes purpose-built servers for specific domains:
+
+#### Wiki Server Architecture
+- **Knowledge Base Integration**: Connects to semantic search and vector databases
+- **Embedding Generation**: Processes and indexes content for intelligent retrieval
+- **Context-Aware Responses**: Provides relevant information based on query context
+
+#### Semgrep Server Architecture  
+- **Security Scanning Engine**: Integrates with Semgrep for static analysis
+- **Rule Management**: Handles custom security rules and pattern matching
+- **Vulnerability Reporting**: Structured output of security findings and recommendations
 
 ### Skills Integration Framework
 
@@ -144,18 +181,21 @@ participant Bridge as "MCP Bridge"
 participant Security as "Security Validator"
 participant Client as "MCP Client"
 participant Server as "MCP Server"
-participant Tool as "External Tool"
+participant Domain as "Domain Logic"
+participant External as "External Service"
 Skill->>Bridge : Request tool execution
 Bridge->>Security : Validate request security
 Security-->>Bridge : Security clearance
 Bridge->>Client : Format MCP request
 Client->>Server : Send serialized message
-Server->>Tool : Execute tool call
-Tool-->>Server : Return result
+Server->>Domain : Process domain logic
+Domain->>External : Call external service
+External-->>Domain : Return result
+Domain-->>Server : Process response
 Server-->>Client : Serialize response
 Client-->>Bridge : Deserialize response
 Bridge-->>Skill : Processed result
-Note over Skill,Tool : All communication follows MCP protocol with security validation
+Note over Skill,External : All communication follows MCP protocol with security validation
 ```
 
 **Diagram sources**
@@ -183,7 +223,7 @@ The system implements several key data flow patterns:
 
 ## Security Guidelines
 
-**New Section** Comprehensive security guidelines have been added to ensure safe MCP server implementations and usage patterns.
+**New Section** Comprehensive security guidelines have been added to ensure safe MCP server implementations and usage patterns across the expanded server ecosystem.
 
 ### Supply Chain Security
 
@@ -251,6 +291,81 @@ Secure communication protocols and network configurations:
 
 **Section sources**
 - [mcp-servers/SECURITY.md:1-200](file://mcp-servers/SECURITY.md#L1-L200)
+
+## MCP Server Ecosystem
+
+The MCP server ecosystem has expanded significantly with specialized implementations for different domains:
+
+### Server Catalog Overview
+
+The current MCP server ecosystem includes:
+
+#### Core Infrastructure Servers
+- **Base Server Framework**: Foundation for building custom MCP servers
+- **Authentication Server**: Centralized authentication and authorization
+- **Configuration Server**: Dynamic configuration management
+
+#### Domain-Specific Servers
+
+##### Wiki Server
+- **Purpose**: Knowledge base and documentation management
+- **Key Features**: Semantic search, vector embeddings, context-aware retrieval
+- **Use Cases**: Technical documentation, code reference, team knowledge sharing
+- **Integration Points**: Vector databases, search engines, content management systems
+
+##### Semgrep Server
+- **Purpose**: Security scanning and vulnerability detection
+- **Key Features**: Static analysis, custom rule support, vulnerability reporting
+- **Use Cases**: Code security auditing, compliance checking, development workflow integration
+- **Integration Points**: CI/CD pipelines, code repositories, security dashboards
+
+### Server Communication Patterns
+
+Each server type implements specific communication patterns optimized for its domain:
+
+```mermaid
+graph LR
+subgraph "Wiki Server Pattern"
+A[Query] --> B[Vector Search]
+B --> C[Context Assembly]
+C --> D[Response Generation]
+end
+subgraph "Semgrep Server Pattern"
+E[Code Scan] --> F[Rule Matching]
+F --> G[Vulnerability Analysis]
+G --> H[Report Generation]
+end
+subgraph "Common MCP Pattern"
+I[Request] --> J[Validation]
+J --> K[Processing]
+K --> L[Response]
+end
+```
+
+**Diagram sources**
+- [mcp-servers/wiki-server/server.mjs:1-50](file://mcp-servers/wiki-server/server.mjs#L1-L50)
+- [mcp-servers/semgrep-server/server.mjs:1-50](file://mcp-servers/semgrep-server/server.mjs#L1-L50)
+
+### Server Discovery and Registration
+
+The expanded ecosystem requires sophisticated server discovery mechanisms:
+
+#### Capability Negotiation
+- **Feature Detection**: Automatic discovery of server capabilities
+- **Version Compatibility**: Negotiation of supported protocol versions
+- **Resource Availability**: Dynamic resource requirement assessment
+
+#### Health and Status Monitoring
+- **Server Health Checks**: Regular connectivity and functionality verification
+- **Performance Metrics**: Response time and throughput monitoring
+- **Error Rate Tracking**: Alerting on degraded service conditions
+
+**Updated** The MCP server ecosystem now supports specialized implementations for knowledge management and security scanning, demonstrating the protocol's flexibility for domain-specific use cases.
+
+**Section sources**
+- [mcp-servers/README.md:1-100](file://mcp-servers/README.md#L1-L100)
+- [mcp-servers/wiki-server/README.md:1-100](file://mcp-servers/wiki-server/README.md#L1-L100)
+- [mcp-servers/semgrep-server/README.md:1-100](file://mcp-servers/semgrep-server/README.md#L1-L100)
 
 ## Detailed Component Analysis
 
@@ -328,6 +443,63 @@ The MCP server supports multiple authentication mechanisms with enhanced securit
 - [mcp-servers/README.md:100-300](file://mcp-servers/README.md#L100-L300)
 - [mcp-servers/SECURITY.md:1-200](file://mcp-servers/SECURITY.md#L1-L200)
 
+### Specialized Server Implementations
+
+#### Wiki Server Architecture
+
+The Wiki Server provides knowledge base capabilities with semantic search and context-aware responses:
+
+##### Core Components
+- **Database Layer**: Persistent storage for wiki content and metadata
+- **Embedding Engine**: Vector representation generation for semantic search
+- **Search Index**: Optimized indexing for fast retrieval operations
+- **Context Manager**: Maintains conversation context for coherent responses
+
+##### Tool Interface
+```mermaid
+flowchart TD
+Query[User Query] --> Embed[Generate Embedding]
+Embed --> Search[Semantic Search]
+Search --> Rank[Result Ranking]
+Rank --> Context[Context Assembly]
+Context --> Generate[Response Generation]
+Generate --> Filter[Security Filtering]
+Filter --> Response[Final Response]
+```
+
+**Diagram sources**
+- [mcp-servers/wiki-server/server.mjs:1-100](file://mcp-servers/wiki-server/server.mjs#L1-L100)
+- [mcp-servers/wiki-server/lib/tools.mjs:1-100](file://mcp-servers/wiki-server/lib/tools.mjs#L1-L100)
+
+#### Semgrep Server Architecture
+
+The Semgrep Server integrates security scanning capabilities into the MCP ecosystem:
+
+##### Core Components
+- **Scanner Engine**: Integration with Semgrep for static analysis
+- **Rule Manager**: Custom security rule definition and management
+- **Report Generator**: Structured vulnerability reports and recommendations
+- **Pipeline Integration**: CI/CD pipeline hooks and webhook support
+
+##### Security Scanning Workflow
+```mermaid
+sequenceDiagram
+participant Client as "MCP Client"
+participant Server as "Semgrep Server"
+participant Scanner as "Scanning Engine"
+participant Rules as "Rule Database"
+Client->>Server : Scan Request
+Server->>Rules : Load Security Rules
+Server->>Scanner : Initialize Scanner
+Scanner->>Rules : Apply Rule Set
+Scanner->>Server : Vulnerability Results
+Server->>Client : Security Report
+```
+
+**Diagram sources**
+- [mcp-servers/semgrep-server/server.mjs:1-100](file://mcp-servers/semgrep-server/server.mjs#L1-L100)
+- [mcp-servers/semgrep-server/lib/scanner.mjs:1-100](file://mcp-servers/semgrep-server/lib/scanner.mjs#L1-L100)
+
 ### Client Integration Patterns
 
 #### Basic Client Usage
@@ -394,20 +566,30 @@ F[Client Library]
 G[Hook Framework]
 H[Security Framework]
 end
+subgraph "Specialized Servers"
+I[Wiki Server]
+J[Semgrep Server]
+K[Custom Servers]
+end
 subgraph "External Integrations"
-I[Tool Adapters]
-J[Service Mesh]
-K[Monitoring Stack]
-L[Supply Chain Scanner]
+L[Tool Adapters]
+M[Service Mesh]
+N[Monitoring Stack]
+O[Supply Chain Scanner]
+P[Vector Database]
+Q[Security Scanner]
 end
 A --> E
 B --> F
 C --> E
 D --> H
-E --> I
-F --> J
-G --> K
-H --> L
+E --> L
+F --> M
+G --> N
+H --> O
+I --> P
+J --> Q
+K --> L
 ```
 
 **Diagram sources**
@@ -423,6 +605,8 @@ The MCP integration relies on several external libraries and services with secur
 - **Security Libraries**: Cryptographic functions for authentication and encryption
 - **Monitoring Libraries**: Metrics collection and logging frameworks with audit capabilities
 - **Supply Chain Tools**: Dependency scanning and vulnerability assessment tools
+- **Vector Databases**: Semantic search and similarity matching for knowledge bases
+- **Security Scanners**: Static analysis tools for code vulnerability detection
 
 ### Internal Dependencies
 
@@ -460,6 +644,20 @@ Within the Pi Codex Kit ecosystem, MCP integrates with:
 - **Retry Policies**: Implement intelligent retry strategies
 - **Security Check Caching**: Cache security validation results where appropriate
 
+### Specialized Server Performance
+
+#### Wiki Server Optimization
+- **Vector Index Caching**: Pre-compute and cache embedding vectors
+- **Query Optimization**: Intelligent query routing and result caching
+- **Memory Management**: Efficient handling of large knowledge bases
+- **Concurrent Processing**: Parallel processing of multiple queries
+
+#### Semgrep Server Optimization
+- **Incremental Scanning**: Only scan changed files for improved performance
+- **Rule Compilation**: Pre-compile security rules for faster execution
+- **Parallel Analysis**: Concurrent scanning of multiple codebases
+- **Result Deduplication**: Eliminate duplicate vulnerability reports
+
 ## Troubleshooting Guide
 
 ### Common Connection Issues
@@ -483,6 +681,18 @@ Within the Pi Codex Kit ecosystem, MCP integrates with:
 - **Symptoms**: Slow response times, high memory usage
 - **Causes**: Inefficient query patterns, connection pool exhaustion, memory leaks
 - **Solutions**: Optimize tool calls, tune connection pool settings, monitor resource usage
+
+### Specialized Server Issues
+
+#### Wiki Server Troubleshooting
+- **Vector Search Failures**: Check database connectivity and index integrity
+- **Embedding Generation Errors**: Verify model availability and memory allocation
+- **Context Loss**: Review conversation state management and timeout settings
+
+#### Semgrep Server Troubleshooting
+- **Scan Failures**: Validate codebase accessibility and scanner configuration
+- **Rule Loading Errors**: Check rule syntax and dependency availability
+- **Performance Issues**: Monitor scanner resource usage and optimize rule sets
 
 ### Platform-Specific Issues
 
@@ -508,7 +718,7 @@ Implement health checks for MCP servers:
 - **Performance Baselines**: Monitor response time trends
 - **Security Status**: Validate security configurations and certificates
 
-**Updated** Enhanced troubleshooting now includes platform-specific guidance for cross-platform compatibility issues, particularly related to port management and process termination.
+**Updated** Enhanced troubleshooting now includes platform-specific guidance for cross-platform compatibility issues, particularly related to port management and process termination, as well as specialized troubleshooting for Wiki and Semgrep servers.
 
 **Section sources**
 - [hooks/README.md:100-200](file://hooks/README.md#L100-L200)
@@ -516,7 +726,9 @@ Implement health checks for MCP servers:
 
 ## Conclusion
 
-The Model Context Protocol integration in Pi Codex Kit provides a robust foundation for connecting skills and agents to external tools with enhanced security and cross-platform compatibility. The modular architecture ensures flexibility while maintaining clear separation of concerns. By following the patterns and guidelines outlined in this document, including the new security guidelines and cross-platform best practices, developers can create reliable integrations that scale effectively in distributed environments.
+The Model Context Protocol integration in Pi Codex Kit provides a robust foundation for connecting skills and agents to external tools with enhanced security and cross-platform compatibility. The expanded MCP server ecosystem, including specialized implementations for knowledge management and security scanning, demonstrates the protocol's versatility and extensibility.
+
+The modular architecture ensures flexibility while maintaining clear separation of concerns. By following the patterns and guidelines outlined in this document, including the comprehensive security guidelines, cross-platform best practices, and specialized server implementations, developers can create reliable integrations that scale effectively in distributed environments.
 
 Key benefits of the MCP approach include:
 - **Standardized Communication**: Consistent interface across diverse tool ecosystems
@@ -525,6 +737,8 @@ Key benefits of the MCP approach include:
 - **Scalable Architecture**: Support for high-throughput scenarios and distributed deployments
 - **Comprehensive Security**: Robust protection against supply-chain attacks and prompt injection
 - **Cross-Platform Compatibility**: Consistent behavior across different operating systems
+- **Domain-Specific Optimization**: Purpose-built servers for specialized use cases
+- **Extensible Ecosystem**: Easy integration of new server implementations
 
 ## Appendices
 
@@ -571,6 +785,58 @@ class MCPClient {
         // Execute tool and handle response with security validation
     }
 }
+```
+
+### Specialized Server Examples
+
+#### Wiki Server Configuration
+```yaml
+# Wiki Server Configuration
+server:
+  name: "wiki-mcp-server"
+  version: "1.0.0"
+  port: 8081
+  
+database:
+  type: "vector"
+  host: "${VECTOR_DB_HOST}"
+  port: 6379
+  index_name: "knowledge_base"
+  
+embedding:
+  model: "text-embedding-ada-002"
+  dimension: 1536
+  batch_size: 100
+  
+search:
+  max_results: 10
+  similarity_threshold: 0.7
+  context_window: 5
+```
+
+#### Semgrep Server Configuration
+```yaml
+# Semgrep Server Configuration
+server:
+  name: "semgrep-mcp-server"
+  version: "1.0.0"
+  port: 8082
+  
+scanner:
+  engine: "semgrep"
+  version: "latest"
+  timeout: 300
+  max_files: 10000
+  
+rules:
+  custom_rules_path: "./custom-rules"
+  default_rule_sets: ["owasp-top-ten", "security-extended"]
+  rule_update_interval: 86400
+  
+reporting:
+  format: "json"
+  severity_levels: ["info", "low", "medium", "high", "critical"]
+  output_directory: "./reports"
 ```
 
 ### Configuration Examples
@@ -647,8 +913,26 @@ For consistent port management across platforms:
 - **macOS/Linux**: Use `kill` command with appropriate signals
 - **Universal Approach**: Leverage Node.js child process management for cross-platform compatibility
 
-**Updated** Enhanced appendices now include comprehensive cross-platform compatibility guidance and updated security configuration examples reflecting the new security guidelines.
+### Server Development Guide
+
+#### Creating Custom MCP Servers
+1. **Define Server Interface**: Implement MCP server protocol handlers
+2. **Register Tools**: Define tool schemas and execution logic
+3. **Add Security**: Implement authentication and authorization
+4. **Testing**: Create comprehensive test suites for all endpoints
+5. **Documentation**: Provide clear API documentation and usage examples
+
+#### Best Practices
+- **Error Handling**: Implement comprehensive error handling with meaningful messages
+- **Performance**: Optimize for concurrent requests and large datasets
+- **Security**: Follow security guidelines and conduct regular audits
+- **Monitoring**: Implement health checks and performance metrics
+- **Documentation**: Maintain up-to-date API documentation and examples
+
+**Updated** Enhanced appendices now include comprehensive cross-platform compatibility guidance, updated security configuration examples reflecting the new security guidelines, and detailed examples of specialized server implementations for Wiki and Semgrep servers.
 
 **Section sources**
 - [mcp-servers/SECURITY.md:1-200](file://mcp-servers/SECURITY.md#L1-L200)
 - [skills/verify-work/SKILL.md:1-100](file://skills/verify-work/SKILL.md#L1-L100)
+- [mcp-servers/wiki-server/README.md:1-100](file://mcp-servers/wiki-server/README.md#L1-L100)
+- [mcp-servers/semgrep-server/README.md:1-100](file://mcp-servers/semgrep-server/README.md#L1-L100)
