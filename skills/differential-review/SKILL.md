@@ -13,8 +13,6 @@ allowed-tools:
   - Bash
 ---
 
-> **Codex adaptation (pi-codex-kit):** Ported from a pi coding-agent skill. Pi-only runtime references (pi packages, `~/.pi` paths, pi tool names) do not apply in Codex — use Codex shell/file tools and the pi-lens MCP tools (`mcp__pi-lens__*`) where this skill mentions pi-lens capabilities. Ignore any pi-specific install/package instructions.
-
 # Differential Security Review
 
 Security-focused code review for PRs, commits, and diffs.
@@ -116,13 +114,9 @@ Before delivering:
 
 ## Integration
 
-**audit-context-building skill:**
-- Pre-Analysis: Build baseline context
-- Phase 4: Deep context on HIGH RISK changes
-
-**issue-writer skill:**
-- Transform findings into formal audit reports
-- Command: `issue-writer --input DIFFERENTIAL_REVIEW_REPORT.md --format audit-report`
+- For variant hunting after a confirmed finding, use `variant-analysis`
+- For verifying whether a finding is exploitable, use `fp-check`
+- For pre-push scanning, use `security-gate`
 
 ---
 
@@ -153,8 +147,8 @@ Time: ~3-4 hours
 ### Deep Audit (Large, Critical Change)
 ```
 Input: 450 files, auth system rewrite
-Strategy: SURGICAL + audit-context-building
-1. Baseline context with audit-context-building
+Strategy: SURGICAL + deep context tracing
+1. Baseline context via git show / Read / Grep
 2. Deep analysis on auth changes only
 3. Blast radius analysis
 4. Adversarial modeling

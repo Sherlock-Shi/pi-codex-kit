@@ -1,0 +1,1 @@
+Markdown-based prompt engineering with YAML frontmatter consumed by Codex's skill loader; some skills invoke external tools (ast-grep, CodeQL, Semgrep, ripgrep) through MCP calls (`mcp__pi-lens__*`) or shell commands, and the `simplify` skill ships a Node.js helper script (`scripts/simplify-context.mjs`).

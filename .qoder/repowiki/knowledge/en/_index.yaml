@@ -1,0 +1,37 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: en-US
+branch: main
+nodes_managed: true
+exported_at: "2026-07-23T11:41:20Z"
+modules:
+    "":
+        dir_name: pi-codex-kit — Additive OpenAI Codex Enhancement Kit
+        title: pi-codex-kit — Additive OpenAI Codex Enhancement Kit
+        scope:
+            - README.md
+            - .gitignore
+        source_files: []
+        children:
+            - hooks
+            - skills
+        depends_on: []
+        related_to: []
+    hooks:
+        dir_name: OpenAI Codex Lifecycle Hooks (RTK Rewrite & pi-lens Reminder)
+        title: OpenAI Codex Lifecycle Hooks (RTK Rewrite & pi-lens Reminder)
+        scope:
+            - hooks/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    skills:
+        dir_name: Codex Slash-Command Skills Library
+        title: Codex Slash-Command Skills Library
+        scope:
+            - skills/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []

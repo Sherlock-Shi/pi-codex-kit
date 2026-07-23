@@ -1,39 +1,31 @@
 ---
 name: deepen-architecture
-model: sonnet
-description: "Find deepening opportunities in a codebase, informed by the domain language in specs/tech-architecture/tech-stack.md and the decisions in specs/adr/. Use when the user wants to improve architecture, find refactoring opportunities, consolidate tightly-coupled modules, or make a codebase more testable and AI-navigable."
+description: "Find deepening opportunities in a codebase — consolidate tightly-coupled modules, improve testability and AI-navigability. Use when the user wants to improve architecture or find refactoring opportunities."
 ---
-
-> **Codex adaptation (pi-codex-kit):** Ported from a pi coding-agent skill. Pi-only runtime references (pi packages, `~/.pi` paths, pi tool names) do not apply in Codex — use Codex shell/file tools and the pi-lens MCP tools (`mcp__pi-lens__*`) where this skill mentions pi-lens capabilities. Ignore any pi-specific install/package instructions.
 
 # Deepen Architecture
 
 Surface architectural friction and propose **deepening opportunities** — refactors that turn shallow modules into deep ones. The aim is testability and AI-navigability.
 
-**Distinct from `define-language` and `model-domain`:** Use this skill to find module-level refactoring opportunities in the codebase. Use `define-language` to produce a canonical glossary of terms. Use `model-domain` to stress-test a plan through a domain-model interview.
+**Distinct from domain modeling:** Use this skill to find module-level refactoring opportunities in the codebase.
 
 > **HARD GATE** — Deep modules must solve a forcing function, not just be "nice abstractions." If you cannot articulate why the abstraction exists, it is premature.
 
 ## Glossary
 
-Use these terms exactly in every suggestion. Consistent language is the point — don't drift into "component," "service," "API," or "boundary." Full definitions in [LANGUAGE.md](../../../skills/deepen-architecture/LANGUAGE.md).
+Use these terms exactly in every suggestion. Consistent language is the point — don't drift into "component," "service," "API," or "boundary."
 
-- **Module** — anything with an interface and an implementation (function, class, package, slice).
-- **Interface** — everything a caller must know to use the module: types, invariants, error modes, ordering, config. Not just the type signature.
-- **Implementation** — the code inside.
-- **Depth** — leverage at the interface: a lot of behaviour behind a small interface. **Deep** = high leverage. **Shallow** = interface nearly as complex as the implementation.
-- **Seam** — where an interface lives; a place behaviour can be altered without editing in place. (Use this, not "boundary.")
-- **Adapter** — a concrete thing satisfying an interface at a seam.
-- **Leverage** — what callers get from depth.
-- **Locality** — what maintainers get from depth: change, bugs, knowledge concentrated in one place.
+**Module** | **Interface** | **Implementation** | **Depth** | **Seam** | **Adapter** | **Leverage** | **Locality**
 
-Key principles (see [LANGUAGE.md](../../../skills/deepen-architecture/LANGUAGE.md) for the full list):
+Full definitions, principles, and relationships are in the Language section at the bottom of this file.
+
+Key principles:
 
 - **Deletion test**: imagine deleting the module. If complexity vanishes, it was a pass-through. If complexity reappears across N callers, it was earning its keep.
 - **The interface is the test surface.**
 - **One adapter = hypothetical seam. Two adapters = real seam.**
 
-This skill is _informed_ by the project's domain model — `specs/tech-architecture/tech-stack.md` and any `specs/adr/`. The domain language gives names to good seams; ADRs record decisions the skill should not re-litigate. See [CONTEXT-FORMAT.md](../../../skills/model-domain/CONTEXT-FORMAT.md) and [ADR-FORMAT.md](../../../skills/model-domain/ADR-FORMAT.md).
+This skill is _informed_ by the project's domain model — any architecture docs or ADRs present in the repository. The domain language gives names to good seams; ADRs record decisions the skill should not re-litigate.
 
 ## Process
 
@@ -41,15 +33,15 @@ This skill is _informed_ by the project's domain model — `specs/tech-architect
 
 Read existing documentation first:
 
-- `specs/tech-architecture/tech-stack.md` (or `specs/tech-architecture/tech-stack.md` + each `specs/tech-architecture/tech-stack.md` in a multi-context repo)
-- Relevant ADRs in `specs/adr/`
+- Architecture docs (tech-stack, system design, or equivalent)
+- Relevant ADRs
 
-If any of these files don't exist, proceed silently — don't flag their absence or suggest creating them upfront.
+If these files don't exist, proceed silently — don't flag their absence or suggest creating them upfront.
 
 **Look-here-first (churn heuristic):** Before organic exploration, rank candidate modules by recent commit frequency. High-churn files are architectural friction magnets — start there.
 
 ```bash
-bash scripts/bp-churn-rank.sh --since 90.days --limit 20
+git log --since="90 days ago" --format= --name-only | sort | uniq -c | sort -rn | head -20
 ```
 
 Then use the Agent tool with `subagent_type=Explore` to walk the codebase. Don't follow rigid heuristics — explore organically and note where you experience friction:
@@ -83,7 +75,7 @@ Present a numbered list of deepening opportunities. For each candidate:
 - **Solution** — plain English description of what would change
 - **Benefits** — explained in terms of locality and leverage, and how tests would improve
 
-**Use `specs/tech-architecture/tech-stack.md` vocabulary for the domain, and [LANGUAGE.md](../../../skills/deepen-architecture/LANGUAGE.md) vocabulary for the architecture.**
+**Use the project's domain vocabulary for the domain, and the Language section vocabulary for the architecture.**
 
 **ADR conflicts**: if a candidate contradicts an existing ADR, only surface it when the friction is real enough to warrant revisiting the ADR. Mark it clearly. Don't list every theoretical refactor an ADR forbids.
 
@@ -95,34 +87,20 @@ Once the user picks a candidate, drop into a grilling conversation. Walk the des
 
 Side effects happen inline as decisions crystallize:
 
-- **Naming a deepened module after a concept not in `specs/tech-architecture/tech-stack.md`?** Add the term to `specs/tech-architecture/tech-stack.md` — same discipline as `model-domain` (see [CONTEXT-FORMAT.md](../../../skills/model-domain/CONTEXT-FORMAT.md)). Create the file lazily if it doesn't exist.
-- **Sharpening a fuzzy term during the conversation?** Update `specs/tech-architecture/tech-stack.md` right there.
-- **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer. See [ADR-FORMAT.md](../../../skills/model-domain/ADR-FORMAT.md).
-- **Want to explore alternative interfaces for the deepened module?** See [INTERFACE-DESIGN.md](../../../skills/deepen-architecture/INTERFACE-DESIGN.md).
+- **Naming a deepened module after a concept not in the project's glossary?** Add the term to the architecture docs. Create the file lazily if it doesn't exist.
+- **Sharpening a fuzzy term during the conversation?** Update the architecture docs right there.
+- **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer.
+- **Want to explore alternative interfaces for the deepened module?** See the Interface Design section below.
 
-### 5. Import-boundary hygiene (e45s14)
+### 5. Import-boundary hygiene
 
-When a deepening move **splits or merges modules**, update `specs/import-boundaries.json` (Playwright `DEPS.list` pattern) — declare which `scripts/lib/*.sh` files may `source` which peers. CI enforces via:
-
-```bash
-bash scripts/check-import-boundaries.sh
-```
-
-Run the check before proposing cross-module `source` edges. Convention docs alone do not authorize new imports; the allowlist must list them.
-
-## Verify
-
-→ verify: `test -f specs/import-boundaries.json && bash scripts/check-import-boundaries.sh && echo OK || echo FAIL`
-
-
-
-<!-- story: e07s02 -->
+When a deepening move **splits or merges modules**, consider documenting which modules may import which peers. If the project has an import-boundary allowlist or dependency linting config, update it accordingly.
 
 ---
 
 # Deepening
 
-How to deepen a cluster of shallow modules safely, given its dependencies. Assumes the vocabulary in [LANGUAGE.md](../../../skills/deepen-architecture/LANGUAGE.md) — **module**, **interface**, **seam**, **adapter**.
+How to deepen a cluster of shallow modules safely, given its dependencies. Assumes the vocabulary in the Language section below — **module**, **interface**, **seam**, **adapter**.
 
 ## Dependency categories
 
@@ -164,7 +142,7 @@ Third-party services (Stripe, Twilio, etc.) you don't control. The deepened modu
 
 When the user wants to explore alternative interfaces for a chosen deepening candidate, use this parallel sub-agent pattern. Based on "Design It Twice" (Ousterhout) — your first idea is unlikely to be the best.
 
-Uses the vocabulary in [LANGUAGE.md](../../../skills/deepen-architecture/LANGUAGE.md) — **module**, **interface**, **seam**, **adapter**, **leverage**.
+Uses the vocabulary in the Language section below — **module**, **interface**, **seam**, **adapter**, **leverage**.
 
 ## Process
 
@@ -173,7 +151,7 @@ Uses the vocabulary in [LANGUAGE.md](../../../skills/deepen-architecture/LANGUAG
 Before spawning sub-agents, write a user-facing explanation of the problem space for the chosen candidate:
 
 - The constraints any new interface would need to satisfy
-- The dependencies it would rely on, and which category they fall into (see [DEEPENING.md](../../../skills/deepen-architecture/DEEPENING.md))
+- The dependencies it would rely on, and which category they fall into (see the Deepening section above)
 - A rough illustrative code sketch to ground the constraints — not a proposal, just a way to make the constraints concrete
 
 Show this to the user, then immediately proceed to Step 2. The user reads and thinks while the sub-agents work in parallel.
@@ -182,21 +160,21 @@ Show this to the user, then immediately proceed to Step 2. The user reads and th
 
 Spawn 3+ sub-agents in parallel using the Agent tool. Each must produce a **radically different** interface for the deepened module.
 
-Prompt each sub-agent with a separate technical brief (file paths, coupling details, dependency category from [DEEPENING.md](../../../skills/deepen-architecture/DEEPENING.md), what sits behind the seam). The brief is independent of the user-facing problem-space explanation in Step 1. Give each agent a different design constraint:
+Prompt each sub-agent with a separate technical brief (file paths, coupling details, dependency category from the Deepening section, what sits behind the seam). The brief is independent of the user-facing problem-space explanation in Step 1. Give each agent a different design constraint:
 
 - Agent 1: "Minimize the interface — aim for 1–3 entry points max. Maximise leverage per entry point."
 - Agent 2: "Maximise flexibility — support many use cases and extension."
 - Agent 3: "Optimise for the most common caller — make the default case trivial."
 - Agent 4 (if applicable): "Design around ports & adapters for cross-seam dependencies."
 
-Include both [LANGUAGE.md](../../../skills/deepen-architecture/LANGUAGE.md) vocabulary and CONTEXT.md vocabulary in the brief so each sub-agent names things consistently with the architecture language and the project's domain language.
+Include both the Language section vocabulary and the project's domain vocabulary in the brief so each sub-agent names things consistently with the architecture language and the project's domain language.
 
 Each sub-agent outputs:
 
 1. Interface (types, methods, params — plus invariants, ordering, error modes)
 2. Usage example showing how callers use it
 3. What the implementation hides behind the seam
-4. Dependency strategy and adapters (see [DEEPENING.md](../../../skills/deepen-architecture/DEEPENING.md))
+4. Dependency strategy and adapters (see the Deepening section above)
 5. Trade-offs — where leverage is high, where it's thin
 
 ### 3. Present and compare
@@ -254,9 +232,3 @@ What maintainers get from depth. Change, bugs, knowledge, and verification conce
 - A **Seam** is where a **Module**'s **Interface** lives.
 - An **Adapter** sits at a **Seam** and satisfies the **Interface**.
 - **Depth** produces **Leverage** for callers and **Locality** for maintainers.
-
-## Rejected framings
-
-- **Depth as ratio of implementation-lines to interface-lines** (Ousterhout): rewards padding the implementation. We use depth-as-leverage instead.
-- **"Interface" as the TypeScript `interface` keyword or a class's public methods**: too narrow — interface here includes every fact a caller must know.
-- **"Boundary"**: overloaded with DDD's bounded context. Say **seam** or **interface**.

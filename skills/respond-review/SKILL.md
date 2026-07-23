@@ -1,13 +1,10 @@
 ---
 name: respond-review
-model: sonnet
 description: "Act on a reviewer agent's feedback systematically — categorize findings, apply fixes, verify tests still pass. Use after request-review returns a report, or when user wants to work through code review findings."
 ---
 
-> **Codex adaptation (pi-codex-kit):** Ported from a pi coding-agent skill. Pi-only runtime references (pi packages, `~/.pi` paths, pi tool names) do not apply in Codex — use Codex shell/file tools and the pi-lens MCP tools (`mcp__pi-lens__*`) where this skill mentions pi-lens capabilities. Ignore any pi-specific install/package instructions.
-
 # Respond Review
-> **HARD GATE** — **HARD GATE** — Every reviewer comment must be addressed (fix, disagree + document reason, or ask clarification). Do NOT ignore feedback and merge.
+> **HARD GATE** — Every reviewer comment must be addressed (fix, disagree + document reason, or ask clarification). Do NOT ignore feedback and merge.
 
 
 Work through reviewer findings systematically. Don't apply changes blindly — categorize first, then decide, then fix, then verify.
@@ -24,7 +21,7 @@ For each finding, assign a category:
 
 | Category | Meaning | Action |
 |----------|---------|--------|
-| **must-fix** | Correctness bug, security issue, test failure, CONVENTIONS.md violation | Fix before proceeding |
+| **must-fix** | Correctness bug, security issue, test failure, project convention violation | Fix before proceeding |
 | **should-fix** | Code quality issue, naming, clarity — worth fixing but not blocking | Fix if time allows |
 | **consider** | Architectural suggestion, alternative approach — may or may not apply | Discuss with user |
 
@@ -70,4 +67,4 @@ Skipped (consider): #5 — agreed with user to defer
 All tests pass.
 ```
 
-Suggest next skill: `commit-message`.
+Suggest next step: commit the changes.

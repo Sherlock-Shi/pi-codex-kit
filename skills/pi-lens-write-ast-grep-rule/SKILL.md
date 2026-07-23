@@ -3,8 +3,6 @@ name: pi-lens-write-ast-grep-rule
 description: Use when writing a new pi-lens ast-grep rule YAML file — covers schema, drop path, gotchas, and NAPI runner constraints
 ---
 
-> **Codex adaptation (pi-codex-kit):** Ported from a pi coding-agent skill. Pi-only runtime references (pi packages, `~/.pi` paths, pi tool names) do not apply in Codex — use Codex shell/file tools and the pi-lens MCP tools (`mcp__pi-lens__*`) where this skill mentions pi-lens capabilities. Ignore any pi-specific install/package instructions.
-
 # Writing a pi-lens ast-grep Rule
 
 Drop path: `rules/ast-grep-rules/rules/<id>.yml`  

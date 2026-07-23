@@ -6,21 +6,22 @@ Detailed phase-by-phase workflow for security-focused code review.
 
 **FIRST ACTION - Build complete baseline understanding:**
 
-If `audit-context-building` skill is available:
+Use read-only git commands to understand the baseline (do NOT checkout — preserve the working tree):
 
 ```bash
-# Checkout baseline commit
-git checkout <baseline_commit>
+# View baseline state of specific files
+git show <baseline_commit>:<file_path>
 
-# Invoke audit-context-building skill on baseline codebase
-# Scope = entire relevant project (e.g., packages/contracts/contracts/ for Solidity, src/ for Rust, etc.)
-audit-context-building --scope [entire project or main contract directory] --focus invariants,trust-boundaries,validation-patterns,call-graphs,state-flows
+# List files that existed at baseline
+git ls-tree -r --name-only <baseline_commit> -- <directory>
 
-# Examples:
-# For Solidity: audit-context-building --scope packages/contracts/contracts
-# For Rust: audit-context-building --scope src
-# For full repo: audit-context-building --scope .
+# Diff to understand what changed
+git diff <baseline_commit>..HEAD -- <paths>
 ```
+
+Manually trace the baseline code using Read/Grep to build context:
+- Scope = the relevant project directories affected by the change
+- Focus on: invariants, trust boundaries, validation patterns, call graphs, state flows
 
 **Capture from baseline analysis:**
 - System-wide invariants (what must ALWAYS be true across all code)
@@ -38,8 +39,6 @@ audit-context-building --scope [entire project or main contract directory] --foc
 - Catch when changes break defense-in-depth
 
 **Store baseline context for reference during differential analysis.**
-
-After baseline analysis, checkout back to head commit to analyze changes.
 
 ---
 
@@ -175,14 +174,9 @@ grep -r "functionName(" --include="*.sol" . | wc -l
 
 ## Phase 4: Deep Context Analysis
 
-**If `audit-context-building` skill is available**, invoke it to help answer all the questions below for each HIGH RISK changed function:
+For each HIGH RISK changed function, perform line-by-line analysis using Read, Grep, and code tracing:
 
-```bash
-# Run audit-context-building on the changed function and its dependencies
-audit-context-building --scope [file containing changed function] --focus flow-analysis,call-graphs,invariants,root-cause
-```
-
-**The audit-context-building skill will help you answer:**
+**Answer these questions:**
 
 1. **Map complete function flow:**
    - Entry conditions (preconditions, requires, modifiers)
@@ -212,8 +206,6 @@ audit-context-building --scope [file containing changed function] --focus flow-a
    - WHY might this break?
    - WHY is this approach chosen?
    - WHY could this fail in production?
-
-**If `audit-context-building` skill is NOT available**, manually perform the line-by-line analysis above using Read, Grep, and code tracing.
 
 **Cross-cutting pattern detection:**
 ```bash

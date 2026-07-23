@@ -20,6 +20,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 
 const REWRITE_TIMEOUT_MS = 5000;
+const MAX_STDIN_BYTES = 1024 * 1024; // 1 MB cap — reject oversized payloads
 
 function candidateBins() {
   const bins = [];
@@ -66,8 +67,13 @@ function rewrite(command) {
 function readStdin() {
   return new Promise((resolve) => {
     let data = "";
+    let size = 0;
     process.stdin.setEncoding("utf8");
-    process.stdin.on("data", (c) => (data += c));
+    process.stdin.on("data", (c) => {
+      size += Buffer.byteLength(c);
+      if (size > MAX_STDIN_BYTES) { resolve(data); return; }
+      data += c;
+    });
     process.stdin.on("end", () => resolve(data));
     // If stdin never closes, don't hang the hook forever.
     setTimeout(() => resolve(data), 2000).unref();
@@ -92,12 +98,14 @@ async function main() {
     const rewritten = rewrite(command);
     if (!rewritten || rewritten === command) return;
 
+    // Safety: only accept rewrites that produce an rtk-prefixed command.
+    // A compromised rtk binary must not be able to inject arbitrary commands.
+    if (!rewritten.startsWith("rtk ") && rewritten !== "rtk") return;
+
     process.stdout.write(
       JSON.stringify({
         hookSpecificOutput: {
           hookEventName: "PreToolUse",
-          permissionDecision: "allow",
-          permissionDecisionReason: "RTK auto-rewrite (token optimization)",
           updatedInput: { command: rewritten },
         },
       }),

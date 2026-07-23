@@ -3,8 +3,6 @@ name: pi-lens-write-tree-sitter-rule
 description: Use when writing a new pi-lens tree-sitter query rule YAML file — covers schema, S-expression syntax, capture names, predicates, and gotchas
 ---
 
-> **Codex adaptation (pi-codex-kit):** Ported from a pi coding-agent skill. Pi-only runtime references (pi packages, `~/.pi` paths, pi tool names) do not apply in Codex — use Codex shell/file tools and the pi-lens MCP tools (`mcp__pi-lens__*`) where this skill mentions pi-lens capabilities. Ignore any pi-specific install/package instructions.
-
 # Writing a pi-lens tree-sitter Rule
 
 Drop path: `rules/tree-sitter-queries/<language>/<id>.yml`  

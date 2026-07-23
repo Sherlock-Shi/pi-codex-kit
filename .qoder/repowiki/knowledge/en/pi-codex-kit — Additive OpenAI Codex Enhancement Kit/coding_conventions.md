@@ -1,0 +1,2 @@
+- Each child directory is self-serve: it ships its own README with step-by-step install, verification command(s), and rollback instructions, so consumers never need to read cross-module docs.
+- Installations are additive and idempotent — they append to `~/.codex/hooks.json`, `config.toml`, or `~/.cc-switch/skills/` without modifying pre-existing files, and every change has a documented diff/backup rollback path.

@@ -3,13 +3,11 @@ name: pi-lens-ast-grep
 description: Use when searching or replacing code patterns - use ast-grep instead of text search for semantic accuracy
 ---
 
-> **Codex adaptation (pi-codex-kit):** Ported from a pi coding-agent skill. Pi-only runtime references (pi packages, `~/.pi` paths, pi tool names) do not apply in Codex — use Codex shell/file tools and the pi-lens MCP tools (`mcp__pi-lens__*`) where this skill mentions pi-lens capabilities. Ignore any pi-specific install/package instructions.
-
 # AST-Grep Code Search
 
 Use `ast_grep_search` and `ast_grep_replace` for semantic code search/replace. ast-grep understands code structure, not just text.
 
-These tools (plus `ast_grep_outline`, `ast_grep_dump`, `lsp_navigation`) are registered but inactive by default on hosts that support pi's dynamic tooling. If a call to one of them isn't recognized, activate it first: `pi_lens_activate_tools tools=["ast_grep_search", "ast_grep_replace"]`.
+These tools are provided by the pi-lens MCP server (`pilens_ast_grep_search`, `pilens_ast_grep_replace`, etc.).
 
 ## When to Use
 
@@ -93,7 +91,7 @@ When a pattern returns zero matches and you don't know the correct node kind or 
 ast_grep_dump source="function foo() { return 1; }" lang="typescript"
 ```
 
-Returns the full indented AST with node kinds and positions. Then use the correct kind in your pattern or `insideKind`. `ast_grep_dump` is registered but inactive by default — call `pi_lens_activate_tools` with `tools: ["ast_grep_dump"]` first if it isn't already active.
+Returns the full indented AST with node kinds and positions. Then use the correct kind in your pattern or `insideKind`.
 
 ### Composite (has/inside) in raw YAML
 

@@ -14,8 +14,13 @@
 function readStdin() {
   return new Promise((resolve) => {
     let data = "";
+    let size = 0;
     process.stdin.setEncoding("utf8");
-    process.stdin.on("data", (c) => (data += c));
+    process.stdin.on("data", (c) => {
+      size += Buffer.byteLength(c);
+      if (size > 1024 * 1024) { resolve(data); return; }
+      data += c;
+    });
     process.stdin.on("end", () => resolve(data));
     setTimeout(() => resolve(data), 2000).unref();
   });

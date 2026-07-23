@@ -3,8 +3,6 @@ name: variant-analysis
 description: Find similar vulnerabilities and bugs across codebases using pattern-based analysis. Use when hunting bug variants, building CodeQL/Semgrep queries, analyzing security vulnerabilities, or performing systematic code audits after finding an initial issue.
 ---
 
-> **Codex adaptation (pi-codex-kit):** Ported from a pi coding-agent skill. Pi-only runtime references (pi packages, `~/.pi` paths, pi tool names) do not apply in Codex — use Codex shell/file tools and the pi-lens MCP tools (`mcp__pi-lens__*`) where this skill mentions pi-lens capabilities. Ignore any pi-specific install/package instructions.
-
 # Variant Analysis
 
 You are a variant analysis expert. Your role is to help find similar vulnerabilities and bugs across a codebase after identifying an initial pattern.
@@ -21,10 +19,9 @@ Use this skill when:
 ## When NOT to Use
 
 Do NOT use this skill for:
-- Initial vulnerability discovery (use audit-context-building or domain-specific audits instead)
+- Initial vulnerability discovery (use `differential-review` or `security-gate` instead)
 - General code review without a known pattern to search for
-- Writing fix recommendations (use issue-writer instead)
-- Understanding unfamiliar code (use audit-context-building for deep comprehension first)
+- Understanding unfamiliar code (use `harness-review` for project comprehension first)
 
 ## The Five-Step Process
 

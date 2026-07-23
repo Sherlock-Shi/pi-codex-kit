@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: hooks
+title: OpenAI Codex Lifecycle Hooks (RTK Rewrite & pi-lens Reminder)
+scope:
+    - hooks/
+source_files: []
+depends_on: []
+related_to: []

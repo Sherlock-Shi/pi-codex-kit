@@ -1,23 +1,29 @@
 # pi-codex-kit
 
-Portable, **standalone** Codex tooling migrated from the pi coding agent. Gives OpenAI Codex the same code-tightening, code-quality, and token-saving behavior you had in pi — with **zero linkage to `~/.pi`** or pi's runtime.
+Portable, **additive** Codex enhancement kit migrated from the pi coding agent. Gives OpenAI Codex the same code-tightening, code-quality, and token-saving behavior — with **zero linkage to `~/.pi`** and **no forced installation**.
 
-Syncs to other machines (e.g. a MacBook Air) as a private git repo. Skills are distributed through **cc-switch** (SSOT `~/.cc-switch/skills/` → symlinked into `~/.codex/skills/`).
+Everything here is self-serve: browse the directory you need, follow its README, copy-paste. Nothing modifies your existing Codex environment unless you explicitly add it.
 
 ---
 
-## What this kit provides
+## Quick start
 
-| Capability | Codex mechanism | Source (provenance) |
-|---|---|---|
-| **RTK** token-saving shell rewrite | `PreToolUse` hook → `rtk rewrite` | rtk v0.43.0 (standalone binary) |
-| **pi-lens** code-quality feedback | MCP server (`[mcp_servers.pi-lens]`) | `pi-lens@3.8.71` from npm (standalone install) |
-| **pi-simplify** code simplification review | `simplify` skill + bundled script | ported from `pi-simplify@0.2.3` |
-| pi-lens authoring skills ×4 | cc-switch skills | adapted from pi-lens |
-| Curated review/TDD skills ×11 | cc-switch skills | adapted from bigpowers + piolium |
-| AGENTS.md coding glue | cc-switch prompt manager (append) | `agents-md/coding-glue.md` |
+| I want... | Go to | What to do |
+|-----------|-------|------------|
+| Token-saving shell rewrites (RTK) + code-quality reminders | [`hooks/`](hooks/README.md) | Copy `.mjs` files to `~/.codex/hooks/`, add entries to `hooks.json` |
+| pi-lens code-quality MCP server (16 tools) | [`mcp-servers/`](mcp-servers/README.md) | npm install, paste TOML block into `config.toml` |
+| Review / TDD / security / simplification skills | [`skills/`](skills/README.md) | Copy skill folders to `~/.cc-switch/skills/` or `~/.codex/skills/` |
 
-**Not included (deliberately):** context-mode, pi-subagents, pi-dynamic-workflows, pi-hermes-memory, pi-permission-system — pi-internal APIs with no clean Codex equivalent.
+Each directory has its own README with step-by-step instructions, verification, and rollback.
+
+---
+
+## Prerequisites
+
+- **Node.js** on PATH (v18+)
+- **git** on PATH
+- **rtk** binary on PATH or `~/.local/bin/rtk[.exe]` (for the RTK hook only; override with `RTK_BIN`)
+- **cc-switch** (optional, for skill distribution + cloud sync)
 
 ---
 
@@ -25,120 +31,74 @@ Syncs to other machines (e.g. a MacBook Air) as a private git repo. Skills are d
 
 ```
 pi-codex-kit/
-├── README.md                        ← this file (incl. AGENT CONTRACT below)
+├── README.md              ← this file
 ├── .gitignore
 ├── hooks/
-│   ├── rtk-pretooluse.mjs           ← PreToolUse: rewrites shell cmds via rtk
-│   └── lens-reminder.mjs            ← PostToolUse: nudges pi-lens analysis
-├── scripts/
-│   ├── mcp-smoke.mjs                ← verifies the pi-lens MCP server starts + lists tools
-│   ├── append-mcp.mjs               ← ADDITIVE, idempotent [mcp_servers.pi-lens] insertion
-│   └── merge-hooks.mjs              ← ADDITIVE, idempotent hooks.json merge
-├── pi-lens/
-│   ├── install.ps1                  ← Windows: standalone npm install of pi-lens
-│   └── install.sh                   ← macOS/Linux: same
-├── codex-config/
-│   ├── mcp-servers.template.toml    ← reference block only
-│   └── hooks.template.json          ← reference; rendered + merged at install
-├── skills/                          ← authored here; copied into ~/.cc-switch/skills/
-│   ├── simplify/
-│   ├── pi-lens-ast-grep/
-│   ├── pi-lens-lsp-navigation/
-│   ├── pi-lens-write-ast-grep-rule/
-│   ├── pi-lens-write-tree-sitter-rule/
-│   └── (curated: audit-code, develop-tdd, ... code-reviewer, fp-check, ...)
-├── agents-md/
-│   └── coding-glue.md               ← APPEND to AGENTS.md via cc-switch prompt manager
-├── install.ps1                      ← Windows orchestrator
-└── install.sh                       ← macOS/Linux orchestrator
+│   ├── README.md          ← install instructions
+│   ├── rtk-pretooluse.mjs ← PreToolUse: rewrites shell cmds via rtk
+│   └── lens-reminder.mjs  ← PostToolUse: nudges pi-lens analysis
+├── mcp-servers/
+│   └── README.md          ← pi-lens install + config.toml registration
+└── skills/
+    ├── README.md          ← skill catalog + install instructions
+    ├── simplify/
+    ├── audit-code/
+    ├── develop-tdd/
+    └── ... (19 skills total)
 ```
 
 ---
 
-## ⚠️ AGENT CONTRACT — read before touching `~/.codex/`
+## Coding Standards & Tooling Glue
 
-Any agent (or human) applying this kit to a machine **must** obey:
+> Optional: append the section below to your `AGENTS.md` (e.g. via cc-switch prompt manager) so the agent knows how to use this kit. Do **not** replace existing AGENTS.md content.
 
-1. **ADD, NEVER REPLACE.** `~/.codex/config.toml` holds the user's providers, plugins, marketplaces, and project-trust settings. **The installer never modifies it.** MCP registration is a manual paste step: the installer prints the exact `[mcp_servers.pi-lens]` block and the user adds it by hand. Never rewrite, reformat, reorder, or regenerate the file.
-2. **Scripts are opt-in helpers only.** `scripts/append-mcp.mjs` and `scripts/merge-hooks.mjs` are additive and idempotent, but only `merge-hooks.mjs` (hooks.json) is run by the installer. `append-mcp.mjs` (config.toml) is never invoked automatically — it exists for users who explicitly want scripted insertion.
-3. **Backups.** `merge-hooks.mjs` backs up `hooks.json` before editing. If you ever use `append-mcp.mjs` manually, it backs up `config.toml` first.
-4. **Be idempotent.** Both scripts check whether the entry already exists and no-op if so. Re-running install must be safe.
-5. **Verify after.** For any manual config.toml edit, diff against a backup — the only change should be the block you added. Run `scripts/mcp-smoke.mjs` against the installed server.
-6. **Rollback.** Remove the `[mcp_servers.pi-lens]` block you pasted, remove `~/.codex/hooks/*.mjs` + their `hooks.json` entries, and delete `~/.codex/vendor/pi-lens/`.
+### Coding workflow (pi-codex-kit tooling)
 
----
+This environment has standalone tooling that keeps generated code tight and future-proof while saving tokens. Use it as follows:
 
-## Prerequisites (per machine)
+#### Token-efficient shell (RTK)
+- Shell commands are transparently rewritten through RTK (Rust Token Killer) by a PreToolUse hook — e.g. `git status` runs as `rtk git status` with compact output. No action needed; just be aware command output is deliberately condensed.
+- For deliberately large raw output, prefix a command with `RTK_DISABLED=1`.
 
-- **Node.js** on PATH (`node --version`). Install verifies this first.
-- **git** on PATH.
-- **rtk** binary on PATH or at `~/.local/bin/rtk[.exe]` (override with `RTK_BIN`). Windows: already at `~/.local/bin/rtk.exe`. macOS: install the `rtk-aarch64-apple-darwin` release binary or via brew.
-- **cc-switch** (for skill distribution + cloud sync).
+#### Code-quality feedback (pi-lens MCP)
+- pi-lens runs entirely locally — file contents never leave your machine. See `mcp-servers/SECURITY.md` for the full trust boundary.
+- After modifying source files, run the pi-lens MCP tool `pilens_analyze` on each changed file before declaring a task done, and resolve any blocking diagnostics it reports.
+- For broader checks use `pilens_diagnostics` (session/project diagnostic state) and `pilens_project_scan` (cheap project-wide scan).
+- At the start of a substantial coding session, consider `pilens_session_start` to baseline diagnostics; `pilens_turn_end` aggregates incremental findings.
+- For structural search/refactor use `pilens_ast_grep_search` / `pilens_ast_grep_replace`; for type-level navigation use `pilens_lsp_navigation` and `pilens_lsp_diagnostics`.
 
----
+#### Simplification review (simplify skill)
+- Before finishing a coding task or committing, run the `simplify` skill on the current diff. It scopes review to changed lines only.
+- Apply its principles: preserve functionality (tests must pass), follow this project's conventions, enhance clarity (reduce complexity/nesting, kill redundancy, better names, no nested ternaries), and maintain balance (readability over fewer lines; don't over-simplify or remove helpful abstractions).
 
-## Install (Windows)
-
-```powershell
-git clone <private-repo-url> D:\Pi_DevelopmentnTooling\pi-codex-kit
-cd D:\Pi_DevelopmentnTooling\pi-codex-kit
-powershell -ExecutionPolicy Bypass -File .\install.ps1
-```
-
-## Install (macOS / Linux)
-
-```bash
-git clone <private-repo-url> ~/dev/pi-codex-kit
-cd ~/dev/pi-codex-kit
-./install.sh
-```
-
-The orchestrator runs these phases:
-
-1. **Pre-flight** — node / git / rtk checks.
-2. **pi-lens runtime** — `npm install --omit=peer pi-lens@3.8.71 typescript-language-server` into `~/.codex/vendor/pi-lens` (self-contained; native modules built per machine, never synced).
-3. **MCP smoke test** — `scripts/mcp-smoke.mjs` confirms the server starts and lists its 16 `pilens_*` tools.
-4. **MCP registration (manual)** — the installer PRINTS the exact `[mcp_servers.pi-lens]` block; **you paste it into `~/.codex/config.toml` yourself**. The installer never touches config.toml.
-5. **Hooks** — copies `hooks/*.mjs` to `~/.codex/hooks/`, merges `hooks.json` additively (with backup).
-6. **Skills → cc-switch SSOT** — copies `skills/*` into `~/.cc-switch/skills/` (skips existing names).
-7. **Manual finish** — prints the remaining UI steps (below).
-
-### Manual finish (both platforms)
-
-- **Paste the MCP block** the installer printed into `~/.codex/config.toml` (top level):
-  ```toml
-  [mcp_servers.pi-lens]
-  command = "node"
-  args = ["<path the installer printed>"]
-  startup_timeout_sec = 30
-  ```
-- In **cc-switch**: install each new skill **to Codex** (symlink mode) so they land in `~/.codex/skills/`.
-- In **cc-switch prompt manager**: **append** `agents-md/coding-glue.md` to your AGENTS.md (do not replace the academic-writing section).
-- In **Codex**: run `/hooks` and **trust** the two new hooks (one-time per machine).
+#### General code-tightness expectations
+- Prefer small, single-responsibility functions with descriptive names.
+- Delete dead code and redundant abstractions rather than commenting them out.
+- Keep comments that explain *why* (design rationale, business rules, non-obvious behavior); remove noise comments that restate the code.
+- Do not change public APIs or refactor outside the scope of the current task unless explicitly asked.
 
 ---
 
 ## Verification checklist
 
 | Check | Pass criterion |
-|---|---|
-| rtk hook | `echo '{"tool_name":"Bash","tool_input":{"command":"git status"}}' \| node ~/.codex/hooks/rtk-pretooluse.mjs` → prints `updatedInput.command = "rtk git status"` |
-| pi-lens MCP | `node scripts/mcp-smoke.mjs <server.js>` → `ok:true`, 16 tools incl. `pilens_session_start`, `pilens_turn_end`; after you paste the block, Codex `/mcp` shows pi-lens connected |
-| config integrity | diff `config.toml` vs its `.bak` → only the `[mcp_servers.pi-lens]` block added |
-| skills | Codex `/skills` lists `simplify`, `pi-lens-*`, curated; `$simplify` on a dirty tree runs the script + scoped review |
-| no pi linkage | no `~/.pi` references in `~/.codex/config.toml` or `hooks.json`; vendor dir self-contained |
+|-------|----------------|
+| RTK hook | `echo '{"tool_name":"Bash","tool_input":{"command":"git status"}}' \| node ~/.codex/hooks/rtk-pretooluse.mjs` → prints `updatedInput.command = "rtk git status"` |
+| pi-lens MCP | Codex `/mcp` shows pi-lens connected with 16 tools |
+| config integrity | diff `config.toml` vs its backup → only the `[mcp_servers.pi-lens]` block added |
+| skills | Codex `/skills` lists your installed skills; `$simplify` on a dirty tree runs scoped review |
+| no pi linkage | no `~/.pi` references anywhere in `~/.codex/` |
 
 ---
 
 ## Known issues
 
-- **Pre-existing `~/.codex/config.toml` parse error** (not caused by this kit): line ~137 `review_model = "gpt-5.6-sol"` — Codex CLI `0.130.0-alpha.5` expects a struct (`AgentRoleToml`) there, so `codex mcp list/add` fails. This kit therefore uses the **manual additive append** (Option B) and does not depend on the `codex mcp` CLI. Fix that line separately if/when desired.
+- **Pre-existing `~/.codex/config.toml` parse error** (not caused by this kit): line ~137 `review_model = "gpt-5.6-sol"` — Codex CLI `0.130.0-alpha.5` expects a struct (`AgentRoleToml`) there, so `codex mcp list/add` fails. Use the manual TOML append described in `mcp-servers/README.md` instead of the `codex mcp` CLI.
 - **rtk has no native Codex hook yet** in any stable release (PRs #2198/#2234/#2973 open). The custom `rtk-pretooluse.mjs` fills the gap; when a stable `rtk hook codex` ships, swap the one `hooks.json` command.
 
-## Rollback
+---
 
-- MCP: remove the `[mcp_servers.pi-lens]` block you pasted into config.toml.
-- Hooks: delete `~/.codex/hooks/rtk-pretooluse.mjs` + `lens-reminder.mjs`, remove their entries from `hooks.json` (or restore backup).
-- pi-lens runtime: delete `~/.codex/vendor/pi-lens/`.
-- Skills: uninstall in cc-switch (moves them to `skill-backups/`).
-- AGENTS.md: revert via cc-switch prompt manager.
+## Not included (deliberately)
+
+context-mode, pi-subagents, pi-dynamic-workflows, pi-hermes-memory, pi-permission-system — pi-internal APIs with no clean Codex equivalent.

@@ -1,12 +1,7 @@
 ---
 name: request-review
-model: opus
 description: "Dispatch a fresh reviewer agent with a clean context to critique the code after audit-code passes. The reviewer has no shared state with the coding agent and gives a genuine second opinion. Use after audit-code passes, before committing, or when user wants an independent code review."
 ---
-
-> **Codex adaptation (pi-codex-kit):** Ported from a pi coding-agent skill. Pi-only runtime references (pi packages, `~/.pi` paths, pi tool names) do not apply in Codex — use Codex shell/file tools and the pi-lens MCP tools (`mcp__pi-lens__*`) where this skill mentions pi-lens capabilities. Ignore any pi-specific install/package instructions.
-
-# story: e45s28
 
 # Request Review
 
@@ -18,14 +13,14 @@ Dispatch fresh reviewer agents with clean contexts. Reviewers have no shared sta
 
 **Run `audit-code` first.** Don't waste reviewer attention on hygiene issues you could have caught yourself.
 
-## Santa Method — Dual-Blind AND Gate (e45s07)
+## Santa Method — Dual-Blind AND Gate
 
 Use **two independent reviewers** (Reviewer A and Reviewer B) with **no shared context** between them or the coding agent.
 
 | Parameter | Value |
 |-----------|-------|
 | Reviewers | 2 (mandatory) |
-| `MAX_REVIEW_ITERATIONS` | **5** (hard cap — e45s28; iteration 6 forbidden) |
+| `MAX_REVIEW_ITERATIONS` | **5** (hard cap; iteration 6 forbidden) |
 | Pass rule | **AND-gate** — both reviewers must pass independently |
 | Blindness | Neither reviewer sees the other's report until both complete |
 
@@ -47,20 +42,19 @@ Write a self-contained brief for each reviewer. Include:
 
 - What was built (feature description, not implementation)
 - Which files changed (the diff context)
-- What `specs/` artifacts are relevant (active `epics/eNN-*.yaml`, `requirements/SCOPE_LATEST.yaml`, `bugs/BUG-*.md`)
-- What CONVENTIONS.md requires
+- What the project's conventions require
 - What the verify command is
 - What you're most uncertain about (where you want fresh eyes)
-- **Security focus** — If the epic has a `specs/security/epics/<id>/THREAT_MODEL.md`, include the relevant vulnerability categories as reviewer focal points. Also include the false-positive exclusion rules so the reviewer avoids known-safe patterns. Tag the review as `security-sensitive: true` if THREAT_MODEL risk is HIGH+.
+- **Security focus** — If the change touches auth, user data, or external APIs, flag it as `security-sensitive` for reviewer focal points.
 
-### 2. Fan-out parallel reviewers (e45s17)
+### 2. Fan-out parallel reviewers
 
-Beyond the mandatory dual-blind pair (e45s07), optionally dispatch **N dimension-specific subagents in one message** — one check per agent for broader coverage (OpenAI Codex `code-review-*` pattern):
+Beyond the mandatory dual-blind pair, optionally dispatch **N dimension-specific subagents in one message** — one check per agent for broader coverage:
 
 | Agent | Focus |
 |-------|-------|
 | R-correctness | Logic, edge cases, verify command result |
-| R-conventions | CONVENTIONS.md, test quality (F.I.R.S.T) |
+| R-conventions | Project conventions, test quality (F.I.R.S.T) |
 | R-security | Injection, auth, secrets (when `security-sensitive`) |
 | R-design | Simpler alternatives, API shape |
 
@@ -74,8 +68,8 @@ Use the Agent tool twice with completely fresh contexts. Each prompt must be sel
 You are code reviewer [A|B]. Review the following code changes independently.
 
 Context: [feature description]
-CONVENTIONS.md rules: [paste relevant sections]
-Active epic shard: [paste or summarize from specs/epics/]
+Project conventions: [paste relevant rules]
+Task spec: [paste or summarize]
 
 Diff: [paste git diff or describe changed files]
 
@@ -83,7 +77,7 @@ Verify command: [runnable command]
 
 Review for:
 1. Correctness — does the code do what was intended?
-2. CONVENTIONS.md compliance — are all rules followed?
+2. CONVENTIONS compliance — are all project rules followed?
 3. Test quality — do tests verify behavior (not implementation)?
 4. Design — are there simpler or more robust approaches?
 5. Edge cases — what inputs or states could cause failures?
@@ -101,14 +95,10 @@ When reviewers return:
 - Compute quality score per reviewer: `100 × (total_items − must_fix − should_fix) / total_items`
 - **AND-gate check:** both scores ≥ 94% and zero must-fix from **both**?
 
-> **HARD GATE** — If either score < 94% or either has must-fix → FAIL round. Run `respond-review` first. The 94% threshold also applies to `npm run compliance` (scripts/audit-compliance.sh).
+> **HARD GATE** — If either score < 94% or either has must-fix → FAIL round. Run `respond-review` first.
 
 ### 4. Hand off to respond-review
 
-Pass combined findings to `respond-review` to categorize and apply fixes. Increment iteration counter. Re-dispatch both reviewers until AND-gate passes or iteration 3 exhausted.
+Pass combined findings to `respond-review` to categorize and apply fixes. Increment iteration counter. Re-dispatch both reviewers until AND-gate passes or iteration cap exhausted.
 
-Report to user: "Review round [N/3]. Reviewer A: [score], Reviewer B: [score]. AND-gate: [PASS|FAIL]."
-
-## Verify
-
-→ verify: `grep -q 'AND-gate' skills/request-review/SKILL.md && grep -q 'max 3' skills/request-review/SKILL.md && echo OK`
+Report to user: "Review round [N/5]. Reviewer A: [score], Reviewer B: [score]. AND-gate: [PASS|FAIL]."

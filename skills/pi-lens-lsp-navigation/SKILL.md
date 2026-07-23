@@ -3,8 +3,6 @@ name: pi-lens-lsp-navigation
 description: Navigate code with IDE features and run proactive LSP diagnostics on files/folders/batches. Use as PRIMARY for code intelligence and type/error checks.
 ---
 
-> **Codex adaptation (pi-codex-kit):** Ported from a pi coding-agent skill. Pi-only runtime references (pi packages, `~/.pi` paths, pi tool names) do not apply in Codex — use Codex shell/file tools and the pi-lens MCP tools (`mcp__pi-lens__*`) where this skill mentions pi-lens capabilities. Ignore any pi-specific install/package instructions.
-
 # LSP Navigation and Diagnostics
 
 Use `lsp_navigation` as **PRIMARY** for code intelligence. Use `lsp_diagnostics` as **PRIMARY** for proactive type/error checks. Do NOT use grep/glob/ast-grep first for code intelligence.
