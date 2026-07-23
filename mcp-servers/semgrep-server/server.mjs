@@ -11,6 +11,7 @@
  * Requires: semgrep on PATH (pip install semgrep).
  */
 import * as readline from "node:readline";
+import { spawnSync } from "node:child_process";
 import { TOOLS, handleToolCall } from "./lib/tools.mjs";
 
 console.log = (...args) => console.error(...args);
@@ -105,5 +106,12 @@ rl.on("line", (line) => {
 });
 
 rl.on("close", () => process.exit(0));
+
+// Warm the semgrep rule compilation cache on startup (non-blocking best-effort).
+try {
+  spawnSync("semgrep", ["--config", "auto", "--metrics=off", "--dump-ast-patterns"], {
+    encoding: "utf8", timeout: 30_000, windowsHide: true, stdio: "ignore",
+  });
+} catch { /* non-critical — cache will warm on first scan */ }
 
 console.error(`[semgrep-server] v${SERVER_VERSION} ready (${TOOLS.length} tools)`);

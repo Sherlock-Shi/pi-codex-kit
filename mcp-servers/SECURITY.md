@@ -219,3 +219,21 @@ All three checks must pass before using the server with production code.
 - **License**: MIT
 - **MCP server entry**: `dist/mcp/server.js`
 - **Vetted for**: OpenAI Codex MCP integration (stdio transport, local-only)
+
+---
+
+## wiki-server trust boundary
+
+- **Runtime**: stdio-only, zero outbound network. Embeddings computed locally via cached ONNX model.
+- **Install-time**: npm deps from registry; embedding model (~80MB) from HuggingFace CDN on first use.
+- **Data**: SQLite DB at `<wikiRoot>/wiki.db` — user-controlled path, never leaves machine.
+- **Full vetting**: [wiki-server/SECURITY.md](wiki-server/SECURITY.md)
+
+---
+
+## semgrep-server trust boundary
+
+- **Runtime**: stdio-only, zero outbound network. Semgrep runs with `--metrics=off` (no telemetry).
+- **Install-time**: None (zero npm deps; wraps pre-installed semgrep binary).
+- **Data**: Scans only paths explicitly passed via tool arguments. Results returned over stdio, never persisted.
+- **Full vetting**: [semgrep-server/SECURITY.md](semgrep-server/SECURITY.md)
