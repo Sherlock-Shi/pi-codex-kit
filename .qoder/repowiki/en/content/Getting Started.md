@@ -17,6 +17,14 @@
 - [mcp-servers/README.md](file://mcp-servers/README.md)
 </cite>
 
+## Update Summary
+**Changes Made**
+- Updated installation section to reflect removal of installation infrastructure (install.ps1, install.sh, scripts/, codex-config/)
+- Revised project structure to emphasize pure reference implementation approach
+- Updated prerequisites and setup instructions for the new reference-only model
+- Removed references to installation tools and configuration management
+- Enhanced focus on clean, auditable code as the primary value proposition
+
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Project Structure](#project-structure)
@@ -30,12 +38,14 @@
 10. [Appendices](#appendices)
 
 ## Introduction
-Pi Codex Kit is an AI-powered development toolkit that helps you analyze code, review changes, and automate parts of your development workflow using skills and agents. It provides a collection of ready-to-use skills for tasks such as code review, architecture deepening, differential review, and variant analysis. The kit integrates with external tools and services to streamline common developer workflows and improve code quality.
+Pi Codex Kit is a pure reference implementation of an AI-powered development toolkit that helps you analyze code, review changes, and automate parts of your development workflow using skills and agents. As version 1.0.0, it provides a collection of ready-to-use skills for tasks such as code review, architecture deepening, differential review, and variant analysis. The kit integrates with external tools and services to streamline common developer workflows and improve code quality.
 
-This getting started guide explains what the kit is, how it works at a high level, prerequisites, installation, initial configuration, and a quick start to run your first skill. It also includes examples of common workflows like code review and architecture analysis.
+This getting started guide explains what the kit is, how it works at a high level, prerequisites, setup requirements, and a quick start to run your first skill. It also includes examples of common workflows like code review and architecture analysis.
+
+**Updated** The project has evolved into a pure reference implementation focused on providing clean, auditable code rather than installation tools or configuration management utilities.
 
 ## Project Structure
-The repository is organized around reusable “skills,” each describing its purpose, inputs, outputs, and agent configuration. Supporting directories include hooks, MCP servers, and scripts that extend or integrate with the skills.
+The repository is organized around reusable "skills," each describing its purpose, inputs, outputs, and agent configuration. Supporting directories include hooks, MCP servers, and scripts that extend or integrate with the skills. The current structure emphasizes simplicity and clarity over complex installation infrastructure.
 
 ```mermaid
 graph TB
@@ -120,14 +130,17 @@ Skill-->>Dev : "Deliver report / recommendations"
 
 ## Detailed Component Analysis
 
-### Prerequisites and Installation
+### Prerequisites and Setup
+**Updated** The project now follows a pure reference implementation approach without installation infrastructure.
+
 - Node.js: Ensure Node.js is installed on your system before using the kit.
 - OpenAI API Key: Configure your OpenAI API key so that agents can call the model service.
-- Repository Setup: Clone or open the repository in your preferred editor or terminal.
+- Repository Access: Clone or open the repository in your preferred editor or terminal.
 
-Initial configuration steps:
-- Set environment variables for the OpenAI API key as required by the agent configuration files under each skill’s agents directory.
+Initial setup steps:
+- Set environment variables for the OpenAI API key as required by the agent configuration files under each skill's agents directory.
 - Verify that any optional integrations (hooks, MCP servers) are available if you plan to use them.
+- No installation scripts or configuration management tools are provided - simply clone and configure.
 
 **Section sources**
 - [README.md](file://README.md)
@@ -152,7 +165,7 @@ For more details on how to invoke the skill and what inputs it expects, see the 
 - Process: The skill loads its agent configuration and runs analysis steps to identify issues, style violations, and potential risks.
 - Outputs: A structured review report with actionable items and references to affected code.
 
-To learn the exact invocation pattern and expected inputs, consult the skill’s documentation.
+To learn the exact invocation pattern and expected inputs, consult the skill's documentation.
 
 **Section sources**
 - [skills/code-reviewer/SKILL.md](file://skills/code-reviewer/SKILL.md)
@@ -250,6 +263,7 @@ VA -. optional .-> MCP
 - Missing dependencies: If using hooks or MCP servers, verify they are installed and reachable.
 - Permission issues: Confirm read access to the target repositories or directories used by skills.
 - Large diffs: Break down large changes into smaller scopes to avoid timeouts or resource constraints.
+- Installation issues: Since this is a pure reference implementation, there are no installation scripts to troubleshoot - simply clone and configure directly.
 
 **Section sources**
 - [skills/code-reviewer/agents/openai.yaml](file://skills/code-reviewer/agents/openai.yaml)
@@ -257,7 +271,7 @@ VA -. optional .-> MCP
 - [mcp-servers/README.md](file://mcp-servers/README.md)
 
 ## Conclusion
-You now have the essentials to start using Pi Codex Kit: install prerequisites, configure your OpenAI API key, and run your first skill. Use code review and architecture analysis to quickly gain insights, then expand to differential review and variant analysis as your needs grow. Refer to each skill’s documentation for precise inputs, outputs, and advanced options.
+You now have the essentials to start using Pi Codex Kit: set up prerequisites, configure your OpenAI API key, and run your first skill. The project's evolution into a pure reference implementation means you can focus directly on the valuable skills and workflows without dealing with installation complexity. Use code review and architecture analysis to quickly gain insights, then expand to differential review and variant analysis as your needs grow. Refer to each skill's documentation for precise inputs, outputs, and advanced options.
 
 ## Appendices
 

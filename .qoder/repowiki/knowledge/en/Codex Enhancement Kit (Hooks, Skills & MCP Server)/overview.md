@@ -1,0 +1,1 @@
+Additive Codex extension kit that wires token-saving RTK hooks, a local pi-lens MCP server, and slash-command skills into an existing Codex install without touching ~/.pi.

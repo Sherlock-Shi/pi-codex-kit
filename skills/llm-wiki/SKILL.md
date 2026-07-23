@@ -52,6 +52,23 @@ Three layers:
 └── SCHEMA.md         ← wiki conventions (co-evolved with user)
 ```
 
+## MCP Tools (wiki-server)
+
+If the wiki MCP server is installed (see `../mcp-servers/wiki-server/README.md`), use these tools for persistent storage and fast retrieval:
+
+| Tool | Use for |
+|------|--------|
+| `wiki_ingest` | Ingest a source — creates summary page, updates entities/concepts, computes embeddings |
+| `wiki_query` | Semantic + keyword search across all wiki pages |
+| `wiki_lint` | Health-check: orphans, broken links, missing embeddings |
+| `wiki_page_read` | Read a specific page with its link graph |
+| `wiki_page_write` | Create/update a page (auto-computes embedding and updates FTS index) |
+| `wiki_status` | Dashboard: page counts by type, last operation |
+
+Pass `wikiRoot` as the absolute path to your wiki directory (the one containing `wiki.db`).
+
+**Fallback:** If the wiki MCP server is not installed, use standard file tools (Read, Write, Glob) to maintain the wiki as markdown files. The workflow below applies either way.
+
 ## Operations
 
 ### Ingest

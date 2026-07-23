@@ -35,14 +35,20 @@ Determine the scan scope from the user's request:
 
 ### 1. Run semgrep
 
-Use semgrep's recommended rules (auto-detects languages):
+**Preferred:** If the semgrep MCP server is installed (see `../mcp-servers/semgrep-server/README.md`), use the `semgrep_scan` tool for warm-cache scanning:
+
+```
+semgrep_scan({ paths: ["<target paths>"], config: "auto" })
+```
+
+**Fallback:** If the MCP server is not available, use semgrep directly via Bash:
 
 ```bash
 # Full repo
-semgrep scan --config auto --json .
+semgrep scan --config auto --json --metrics=off .
 
 # Targeted paths
-semgrep scan --config auto --json <paths...>
+semgrep scan --config auto --json --metrics=off <paths...>
 ```
 
 If the `variant-analysis` skill is also installed, you can optionally use its bundled rulesets for deeper coverage (e.g. `--config ../variant-analysis/resources/semgrep/python.yaml`). This is optional — `--config auto` is sufficient.

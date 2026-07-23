@@ -18,6 +18,13 @@
 - [hooks/rtk-pretooluse.mjs](file://hooks/rtk-pretooluse.mjs)
 </cite>
 
+## Update Summary
+**Changes Made**
+- Updated Skill Configuration Format section to reflect removal of haiku/sonnet/opus model frontmatter fields
+- Revised Agent Parameters section to remove references to deprecated model-specific fields
+- Updated Migration Guide with specific guidance for the breaking change
+- Added deprecation notice and migration steps for affected configuration options
+
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Project Structure](#project-structure)
@@ -87,16 +94,14 @@ Configuration entry points are primarily:
 
 **Section sources**
 - [skills/differential-review/SKILL.md](file://skills/differential-review/SKILL.md)
-- [skills/differential-review/agents/openai.yaml](file://skills/differential-review/agents/openai.yaml)
 - [skills/variant-analysis/SKILL.md](file://skills/variant-analysis/SKILL.md)
-- [skills/variant-analysis/agents/openai.yaml](file://skills/variant-analysis/agents/openai.yaml)
 - [hooks/lens-reminder.mjs](file://hooks/lens-reminder.mjs)
 - [hooks/rtk-pretooluse.mjs](file://hooks/rtk-pretooluse.mjs)
 
 ## Architecture Overview
 The configuration system follows a layered approach:
 - Global defaults: Provided by the platform/runtime.
-- Skill-level configuration: Defined in each skill’s agents/ directory and referenced by SKILL.md.
+- Skill-level configuration: Defined in each skill's agents/ directory and referenced by SKILL.md.
 - Environment overrides: Applied via environment variables at runtime.
 - Dynamic loading: Hook scripts and runtime loaders may merge or override settings based on context.
 
@@ -138,10 +143,13 @@ Best practices:
 - Discovery: The runtime discovers skills and loads their agent configurations automatically.
 - Composition: Multiple providers can be configured per skill; the active provider may be selected via environment or CLI.
 
+**Updated** Removed support for haiku/sonnet/opus model frontmatter fields from skills configuration. These deprecated fields are no longer valid and will cause configuration validation errors if present.
+
 Schema guidelines:
 - Required fields: Provider identifier, model name, authentication source.
 - Optional fields: Temperature, max tokens, system prompt, tool definitions, retries, timeouts.
 - Validation rules: Type checks, value ranges, and presence constraints are enforced at load time.
+- **Breaking Change**: Fields such as `haiku`, `sonnet`, and `opus` are no longer supported in skill frontmatter configurations.
 
 Examples:
 - See per-skill agent configuration files under agents/ for concrete examples.
@@ -155,10 +163,13 @@ Examples:
 - Inheritance: Agent parameters can inherit from global defaults and be overridden at the skill level.
 - Runtime selection: The active agent/provider can be chosen via environment variables or CLI arguments.
 
+**Updated** Removed references to deprecated model-specific parameters including haiku/sonnet/opus frontmatter fields.
+
 Validation:
 - Numeric bounds: Ensure temperature and similar floats are within allowed ranges.
 - Non-negative integers: Max tokens and related limits must be positive.
 - Presence checks: Authentication credentials must be provided through secure channels (environment variables or secret managers).
+- **Validation Error**: Configuration files containing haiku/sonnet/opus frontmatter fields will fail validation with appropriate error messages.
 
 **Section sources**
 - [skills/differential-review/agents/openai.yaml](file://skills/differential-review/agents/openai.yaml)
@@ -233,11 +244,15 @@ Common issues and resolutions:
 - Authentication failures: Verify environment variables for credentials and endpoint URLs.
 - Hook errors: Inspect logs from hooks; ensure dependencies exist and paths are correct.
 - MCP connectivity: Confirm network access and credentials for external servers.
+- **Deprecated Configuration Fields**: If you encounter validation errors related to haiku/sonnet/opus fields, remove these deprecated frontmatter fields from your skill configurations.
+
+**Updated** Added troubleshooting guidance for the breaking change regarding removed model frontmatter fields.
 
 Validation and error reporting:
 - Startup-time validation reports precise locations of invalid configuration.
 - Hook execution errors are logged with stack traces to aid debugging.
 - MCP connection failures include diagnostic messages indicating cause and next steps.
+- **New Error Messages**: Configuration files containing deprecated haiku/sonnet/opus fields will now produce specific validation errors indicating the unsupported fields and migration steps.
 
 **Section sources**
 - [hooks/lens-reminder.mjs](file://hooks/lens-reminder.mjs)
@@ -245,6 +260,8 @@ Validation and error reporting:
 
 ## Conclusion
 The Pi Codex Kit configuration system centers around skill-defined agent configurations, enriched by global defaults and environment overrides. Hooks enable dynamic adjustments, while robust validation ensures reliability. Following the guidelines here will help you configure skills, agents, and MCP servers effectively and troubleshoot issues efficiently.
+
+**Updated** Note that support for haiku/sonnet/opus model frontmatter fields has been removed. Users must update their skill configurations to use current valid configuration options only.
 
 [No sources needed since this section summarizes without analyzing specific files]
 
@@ -273,5 +290,17 @@ The Pi Codex Kit configuration system centers around skill-defined agent configu
   - Update agent configuration files incrementally.
   - Test with environment overrides before committing changes.
   - Review hook scripts for compatibility with new runtime APIs.
+
+**Updated** Breaking Change Migration Steps:
+- **Removed Fields**: The following model frontmatter fields have been removed from skills configuration:
+  - `haiku`: No longer supported
+  - `sonnet`: No longer supported  
+  - `opus`: No longer supported
+- **Migration Actions**:
+  1. Search for deprecated fields in your skill configurations using: `grep -r "haiku\|sonnet\|opus" skills/`
+  2. Remove these fields from all SKILL.md frontmatter sections
+  3. Use standard agent configuration in agents/*.yaml files instead
+  4. Test configurations after migration to ensure proper functionality
+- **Validation**: Configuration files containing these deprecated fields will now fail validation with clear error messages indicating the unsupported fields.
 
 [No sources needed since this section provides general guidance]

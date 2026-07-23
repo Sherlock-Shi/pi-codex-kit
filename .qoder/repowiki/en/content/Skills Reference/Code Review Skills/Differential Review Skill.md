@@ -10,6 +10,12 @@
 - [openai.yaml](file://skills/differential-review/agents/openai.yaml)
 </cite>
 
+## Update Summary
+**Changes Made**
+- Updated methodology section to reflect the replacement of unsafe git checkout operations with read-only git show commands
+- Enhanced security considerations and environment portability documentation
+- Added safety-focused workflow guidance for diff analysis
+
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Project Structure](#project-structure)
@@ -18,12 +24,13 @@
 5. [Detailed Component Analysis](#detailed-component-analysis)
 6. [Dependency Analysis](#dependency-analysis)
 7. [Performance Considerations](#performance-considerations)
-8. [Troubleshooting Guide](#troubleshooting-guide)
-9. [Conclusion](#conclusion)
-10. [Appendices](#appendices)
+8. [Security and Safety Enhancements](#security-and-safety-enhancements)
+9. [Troubleshooting Guide](#troubleshooting-guide)
+10. [Conclusion](#conclusion)
+11. [Appendices](#appendices)
 
 ## Introduction
-The differential-review skill focuses on change-focused code reviews with adversarial testing capabilities. It provides a structured methodology for analyzing diffs, identifying risky changes, and applying adversarial strategies to uncover latent defects. The skill also defines pattern recognition techniques and standardized reporting formats to ensure consistent, actionable review outcomes.
+The differential-review skill focuses on change-focused code reviews with adversarial testing capabilities. It provides a structured methodology for analyzing diffs, identifying risky changes, and applying adversarial strategies to uncover latent defects. The skill also defines pattern recognition techniques and standardized reporting formats to ensure consistent, actionable review outcomes. **Updated** to emphasize safe, read-only operations that improve security and portability across different environments.
 
 ## Project Structure
 The skill is organized as a self-contained module under the skills directory:
@@ -74,11 +81,12 @@ F --> A
 - [openai.yaml](file://skills/differential-review/agents/openai.yaml)
 
 ## Core Components
-- Change Analysis Methodology: Defines how to scope diffs, prioritize risk areas, and validate impact across modules.
+- Change Analysis Methodology: Defines how to scope diffs, prioritize risk areas, and validate impact across modules using safe, read-only operations.
 - Adversarial Testing Strategies: Provides techniques to stress-test changes by simulating edge cases, failure modes, and misuse scenarios.
 - Pattern Recognition Catalog: Enumerates common risky patterns and anti-patterns that often emerge in diffs.
 - Reporting Format: Standardizes outputs for clarity, traceability, and actionability.
 - Agent Configuration: Controls model parameters and behavior for automated assistance during review.
+- **Security-First Operations**: Ensures all repository interactions use read-only commands to prevent accidental modifications and improve cross-environment compatibility.
 
 **Section sources**
 - [SKILL.md](file://skills/differential-review/SKILL.md)
@@ -89,7 +97,7 @@ F --> A
 - [openai.yaml](file://skills/differential-review/agents/openai.yaml)
 
 ## Architecture Overview
-The skill orchestrates a pipeline from diff ingestion through adversarial evaluation to report generation. The agent configuration tunes the model’s behavior to align with the skill’s standards.
+The skill orchestrates a pipeline from diff ingestion through adversarial evaluation to report generation. The agent configuration tunes the model's behavior to align with the skill's standards. **Updated** to emphasize read-only operations throughout the workflow.
 
 ```mermaid
 sequenceDiagram
@@ -99,7 +107,7 @@ participant Agent as "Agent (openai.yaml)"
 participant Repo as "Codebase/Diff"
 participant Report as "Report Generator"
 User->>Skill : "Provide diff and context"
-Skill->>Repo : "Extract changed files and metadata"
+Skill->>Repo : "Extract changed files using read-only git show"
 Skill->>Agent : "Invoke analysis with configured parameters"
 Agent-->>Skill : "Insights and flagged items"
 Skill->>Skill : "Apply methodology and pattern checks"
@@ -120,15 +128,17 @@ Report-->>User : "Review output"
 ## Detailed Component Analysis
 
 ### Change Analysis Methodology
-This component outlines the stepwise approach to reviewing diffs:
-- Scope identification: Determine affected components and dependencies.
+This component outlines the stepwise approach to reviewing diffs using safe, read-only operations:
+- Scope identification: Determine affected components and dependencies without modifying the working tree.
 - Risk triage: Prioritize high-impact changes based on complexity and exposure.
 - Validation strategy: Define tests, assertions, and verification steps.
 - Impact assessment: Evaluate cross-module effects and regression risks.
+- **Safe Diff Extraction**: Utilize `git show` commands instead of `git checkout` to prevent accidental repository state changes and improve portability across different environments.
 
 ```mermaid
 flowchart TD
-Start(["Start Diff Review"]) --> Scope["Identify Scope and Dependencies"]
+Start(["Start Diff Review"]) --> SafeOps["Use Read-Only Git Show Commands"]
+SafeOps --> Scope["Identify Scope and Dependencies"]
 Scope --> Triage["Triage Risk Areas"]
 Triage --> Validate["Define Validation Strategy"]
 Validate --> Assess["Assess Cross-Module Impact"]
@@ -226,7 +236,7 @@ R4 --> R5["Finalize Report"]
 - [reporting.md](file://skills/differential-review/reporting.md)
 
 ### Agent Configuration
-The agent configuration controls model invocation and behavior alignment with the skill’s standards:
+The agent configuration controls model invocation and behavior alignment with the skill's standards:
 - Model selection and parameters: Tune temperature, max tokens, and other runtime settings.
 - Prompt scaffolding: Embed methodology, adversarial prompts, and pattern instructions.
 - Output constraints: Enforce structured responses compatible with the reporting format.
@@ -250,7 +260,7 @@ Constraints --> Run
 - [SKILL.md](file://skills/differential-review/SKILL.md)
 
 ## Dependency Analysis
-The skill’s internal dependencies are cohesive and focused:
+The skill's internal dependencies are cohesive and focused:
 - SKILL.md orchestrates usage and ties together methodology, adversarial testing, patterns, and reporting.
 - Methodology drives the flow into adversarial testing and pattern checks.
 - Patterns inform both analysis and reporting.
@@ -294,14 +304,51 @@ CFG["agents/openai.yaml"] --> SKILL
 - Cache pattern matches where possible to avoid redundant scans.
 - Batch adversarial scenarios to minimize overhead while maintaining coverage.
 - Use agent configuration to balance depth and speed according to review urgency.
+- **Optimize read-only operations**: Leverage efficient git show commands to minimize I/O overhead while maintaining safety guarantees.
 
-[No sources needed since this section provides general guidance]
+## Security and Safety Enhancements
+**New Section** - This section documents the critical security improvements made to the differential-review skill.
+
+### Safe Repository Operations
+The skill now exclusively uses read-only git operations to eliminate the risk of accidental repository modifications:
+
+#### Previous Approach (Deprecated)
+- Used `git checkout` commands that could modify working tree state
+- Required write permissions to repository directories
+- Potentially dangerous in shared or CI/CD environments
+- Limited portability across different deployment contexts
+
+#### Current Approach (Recommended)
+- Uses `git show` commands for all repository access
+- Maintains read-only access to repository contents
+- Eliminates risk of unintended state modifications
+- Improves compatibility across diverse environments including restricted CI/CD pipelines
+- Supports containerized and ephemeral execution contexts
+
+### Security Benefits
+- **Isolation**: No modification of source code or repository metadata
+- **Auditability**: All operations are transparent and non-destructive
+- **Portability**: Works consistently across different permission models and deployment strategies
+- **Reproducibility**: Same results regardless of local repository state variations
+
+### Implementation Guidelines
+When integrating the differential-review skill:
+- Ensure git is available in the execution environment
+- Verify read-only access to target repositories
+- Configure appropriate git credentials for private repositories
+- Use temporary directories for any intermediate processing needs
+
+**Section sources**
+- [methodology.md](file://skills/differential-review/methodology.md)
+- [SKILL.md](file://skills/differential-review/SKILL.md)
 
 ## Troubleshooting Guide
 - If reports lack actionable details, verify that evidence attachments and rationale fields are populated per the reporting format.
 - If adversarial scenarios produce false positives, refine scenario constraints and add negative examples to the pattern catalog.
 - If agent outputs drift from expected structure, adjust prompt scaffolding and output constraints in the agent configuration.
 - If analysis misses critical areas, expand scope identification and dependency mapping in the methodology.
+- **Git Operation Issues**: If encountering permission errors, ensure read-only access to repositories and verify git availability in the execution environment.
+- **Environment Compatibility**: If experiencing portability issues, confirm that the environment supports standard git show operations without requiring write permissions.
 
 **Section sources**
 - [reporting.md](file://skills/differential-review/reporting.md)
@@ -311,18 +358,17 @@ CFG["agents/openai.yaml"] --> SKILL
 - [openai.yaml](file://skills/differential-review/agents/openai.yaml)
 
 ## Conclusion
-The differential-review skill provides a comprehensive framework for change-focused code reviews. By combining rigorous methodology, adversarial testing, robust pattern recognition, and standardized reporting, it enables teams to detect and mitigate risks early. With configurable agent behavior, the skill adapts to varying project needs while maintaining consistent quality and traceability.
-
-[No sources needed since this section summarizes without analyzing specific files]
+The differential-review skill provides a comprehensive framework for change-focused code reviews. By combining rigorous methodology, adversarial testing, robust pattern recognition, and standardized reporting, it enables teams to detect and mitigate risks early. With configurable agent behavior and enhanced security through read-only operations, the skill adapts to varying project needs while maintaining consistent quality, traceability, and safety across diverse deployment environments.
 
 ## Appendices
 
 ### Workflow Integration Checklist
 - Prepare diffs and related context (tests, logs, prior issues).
 - Configure agent parameters for desired depth and speed.
-- Execute methodology steps and run adversarial scenarios.
-- Apply pattern checks and document findings.
-- Generate and distribute standardized reports.
+- Execute methodology steps using safe, read-only git operations.
+- Run adversarial scenarios and apply pattern checks.
+- Document findings and generate standardized reports.
+- **Verify Environment Compatibility**: Ensure git is available and read-only access is properly configured.
 
 **Section sources**
 - [SKILL.md](file://skills/differential-review/SKILL.md)

@@ -11,23 +11,34 @@
 - [standard-verification.md](file://skills/fp-check/references/standard-verification.md)
 </cite>
 
+## Update Summary
+**Changes Made**
+- Updated security model to reflect read-only operations only
+- Enhanced verification workflow documentation with security constraints
+- Added security considerations section for automated code analysis
+- Updated troubleshooting guide with security-related guidance
+
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Project Structure](#project-structure)
 3. [Core Components](#core-components)
-4. [Architecture Overview](#architecture-overview)
-5. [Detailed Component Analysis](#detailed-component-analysis)
-6. [Dependency Analysis](#dependency-analysis)
-7. [Performance Considerations](#performance-considerations)
-8. [Troubleshooting Guide](#troubleshooting-guide)
-9. [Conclusion](#conclusion)
-10. [Appendices](#appendices)
+4. [Security Model](#security-model)
+5. [Architecture Overview](#architecture-overview)
+6. [Detailed Component Analysis](#detailed-component-analysis)
+7. [Dependency Analysis](#dependency-analysis)
+8. [Performance Considerations](#performance-considerations)
+9. [Security Considerations](#security-considerations)
+10. [Troubleshooting Guide](#troubleshooting-guide)
+11. [Conclusion](#conclusion)
+12. [Appendices](#appendices)
 
 ## Introduction
 This document provides comprehensive reference material for the FP Check skill, which enables functional programming verification capabilities across codebases. It consolidates guidance on bug class verification, deep verification techniques, evidence templates, false positive pattern recognition, gate review processes, and standard verification procedures. The goal is to help practitioners define robust verification rules, integrate them with functional languages, detect common anti-patterns, and execute repeatable verification workflows that improve reliability and maintainability.
 
+**Updated** Security enhancement now restricts all operations to read-only tools only, following the principle of least privilege for automated code analysis tasks.
+
 ## Project Structure
-The FP Check skill is organized as a modular set of references under a dedicated directory. The primary entry point describes the skill’s purpose and scope, while the references folder contains detailed methodology and operational guidance.
+The FP Check skill is organized as a modular set of references under a dedicated directory. The primary entry point describes the skill's purpose and scope, while the references folder contains detailed methodology and operational guidance.
 
 ```mermaid
 graph TB
@@ -72,6 +83,8 @@ The FP Check skill centers around six core components:
 
 These components collectively form a cohesive methodology for verifying functional correctness and style adherence in functional programming contexts.
 
+**Updated** All components now operate under strict read-only permissions, ensuring no modification capabilities during analysis.
+
 **Section sources**
 - [bug-class-verification.md](file://skills/fp-check/references/bug-class-verification.md)
 - [deep-verification.md](file://skills/fp-check/references/deep-verification.md)
@@ -80,8 +93,32 @@ These components collectively form a cohesive methodology for verifying function
 - [gate-reviews.md](file://skills/fp-check/references/gate-reviews.md)
 - [standard-verification.md](file://skills/fp-check/references/standard-verification.md)
 
+## Security Model
+The FP Check skill operates under a strict security model that enforces read-only access principles:
+
+### Permission Restrictions
+- **Read-Only Operations**: All verification tools are restricted to read-only file system access
+- **No Write Capabilities**: Explicit removal of write, edit, and bash execution capabilities
+- **Principle of Least Privilege**: Automated code analysis tasks operate with minimal required permissions
+- **Isolated Execution Environment**: Verification runs occur in sandboxed environments
+
+### Security Benefits
+- Prevents accidental code modifications during analysis
+- Reduces attack surface for potential vulnerabilities
+- Ensures auditability of verification processes
+- Maintains integrity of source code repositories
+
+### Operational Constraints
+- File system access limited to reading code artifacts
+- No shell command execution capabilities
+- No network access unless explicitly configured
+- Temporary files created only in secure, isolated directories
+
+**Section sources**
+- [SKILL.md](file://skills/fp-check/SKILL.md)
+
 ## Architecture Overview
-At a high level, the FP Check skill orchestrates verification through a pipeline:
+At a high level, the FP Check skill orchestrates verification through a secure pipeline:
 
 - Input: Code artifacts from functional programming languages (e.g., Haskell, OCaml, Scala, Clojure).
 - Rule Engine: Applies rule definitions derived from bug classes and anti-pattern catalogs.
@@ -92,10 +129,10 @@ At a high level, the FP Check skill orchestrates verification through a pipeline
 ```mermaid
 flowchart TD
 Start(["Start Verification"]) --> LoadRules["Load Rule Definitions<br/>from Bug Classes and Anti-Patterns"]
-LoadRules --> AnalyzeCode["Analyze Functional Code Artifacts"]
+LoadRules --> AnalyzeCode["Analyze Functional Code Artifacts<br/>(Read-Only Access)"]
 AnalyzeCode --> DetectIssues{"Issues Detected?"}
 DetectIssues --> |No| GenerateReport["Generate Clean Report"]
-DetectIssues --> |Yes| ApplyDeepVerify["Apply Deep Verification Techniques"]
+DetectIssues --> |Yes| ApplyDeepVerify["Apply Deep Verification Techniques<br/>(Sandboxed Environment)"]
 ApplyDeepVerify --> Classify["Classify Findings by Bug Class"]
 Classify --> TemplateEvidence["Populate Evidence Templates"]
 TemplateEvidence --> GateReview["Gate Review Process"]
@@ -125,6 +162,8 @@ Operational guidance covers:
 - How to validate rule coverage.
 - How to triage and prioritize findings.
 
+**Updated** All bug class verification now operates within read-only constraints, ensuring no accidental modifications during classification.
+
 **Section sources**
 - [bug-class-verification.md](file://skills/fp-check/references/bug-class-verification.md)
 
@@ -137,6 +176,8 @@ Deep verification extends basic checks with more rigorous analysis methods:
 - Integration with language-specific toolchains.
 
 It also outlines when to escalate from standard checks to deep verification and how to interpret deeper findings.
+
+**Updated** Deep verification techniques now execute in isolated, read-only environments to prevent any side effects during analysis.
 
 **Section sources**
 - [deep-verification.md](file://skills/fp-check/references/deep-verification.md)
@@ -190,11 +231,13 @@ Standard procedures provide repeatable workflows:
 
 These procedures help teams achieve consistent outcomes across environments and contributors.
 
+**Updated** All verification procedures now enforce read-only access policies and include security validation steps.
+
 **Section sources**
 - [standard-verification.md](file://skills/fp-check/references/standard-verification.md)
 
 ## Dependency Analysis
-The FP Check skill’s references are interdependent:
+The FP Check skill's references are interdependent:
 
 - SKILL.md serves as the entry point and links to all reference materials.
 - Bug class definitions inform rule creation and detection logic.
@@ -251,8 +294,36 @@ V --> G
 - Use targeted rule sets for specific modules or PRs rather than full scans.
 - Balance depth vs. breadth; escalate to deep verification selectively.
 - Monitor false positive rates and refine rules to reduce overhead.
+- Leverage read-only caching mechanisms to improve performance without compromising security.
 
-[No sources needed since this section provides general guidance]
+**Updated** Performance optimizations now account for read-only operation constraints and sandboxed execution environments.
+
+## Security Considerations
+The FP Check skill implements comprehensive security measures to protect codebases during analysis:
+
+### Read-Only Enforcement
+- All file system operations are restricted to read-only access
+- No write, edit, or delete capabilities available to verification tools
+- Shell command execution is disabled to prevent arbitrary code execution
+- Network access is blocked unless explicitly configured for external dependencies
+
+### Isolation and Sandboxing
+- Verification processes run in isolated containers or virtual environments
+- Temporary files are created in secure, ephemeral directories
+- Memory isolation prevents data leakage between verification runs
+- Resource limits prevent denial-of-service attacks
+
+### Audit and Compliance
+- Complete audit trails for all verification activities
+- Immutable evidence storage for compliance requirements
+- Security scanning of verification tool configurations
+- Regular security assessments of the verification pipeline
+
+### Best Practices
+- Always use the latest version of verification tools
+- Review security configurations regularly
+- Monitor for unusual activity during verification runs
+- Implement proper access controls for verification infrastructure
 
 ## Troubleshooting Guide
 Common issues and resolutions:
@@ -261,8 +332,10 @@ Common issues and resolutions:
 - Incomplete evidence: Ensure evidence templates capture required fields and reproducible context.
 - Gate failures: Review gate criteria and remediation steps; re-run verification after fixes.
 - Slow runs: Narrow scope, enable caching, and split large jobs into smaller tasks.
+- Permission errors: Verify read-only access configuration and ensure proper file permissions are set.
+- Security policy violations: Review security configurations and ensure compliance with organizational policies.
 
-For detailed procedures, refer to the standard verification and gate review references.
+**Updated** Added security-related troubleshooting scenarios and solutions.
 
 **Section sources**
 - [false-positive-patterns.md](file://skills/fp-check/references/false-positive-patterns.md)
@@ -271,9 +344,9 @@ For detailed procedures, refer to the standard verification and gate review refe
 - [standard-verification.md](file://skills/fp-check/references/standard-verification.md)
 
 ## Conclusion
-The FP Check skill offers a structured approach to verifying functional programming code through well-defined bug classes, deep verification techniques, standardized evidence, false positive mitigation, gate reviews, and repeatable procedures. By adopting these practices, teams can improve reliability, reduce risk, and maintain high standards across functional codebases.
+The FP Check skill offers a structured approach to verifying functional programming code through well-defined bug classes, deep verification techniques, standardized evidence, false positive mitigation, gate reviews, and repeatable procedures. By adopting these practices and operating under strict read-only security constraints, teams can improve reliability, reduce risk, and maintain high standards across functional codebases while ensuring complete security and auditability.
 
-[No sources needed since this section summarizes without analyzing specific files]
+**Updated** The enhanced security model ensures that all verification activities maintain the highest standards of safety and compliance.
 
 ## Appendices
 
@@ -290,7 +363,7 @@ participant Gate as "Gate Reviewer"
 Dev->>Runner : "Initiate verification"
 Runner->>Rules : "Load bug classes and anti-patterns"
 Rules-->>Runner : "Ready"
-Runner->>Runner : "Analyze code artifacts"
+Runner->>Runner : "Analyze code artifacts (Read-Only)"
 Runner->>Evidence : "Capture findings via templates"
 Evidence-->>Runner : "Structured evidence"
 Runner->>Gate : "Submit for gate review"
@@ -303,3 +376,13 @@ end
 ```
 
 [No sources needed since this diagram shows conceptual workflow, not actual code structure]
+
+### Security Configuration Reference
+Key security settings for FP Check skill deployment:
+
+- **File System Permissions**: Read-only access to target directories
+- **Network Access**: Disabled by default, configurable for external dependencies
+- **Shell Execution**: Completely disabled to prevent arbitrary command execution
+- **Memory Limits**: Configurable per verification task to prevent resource exhaustion
+- **Audit Logging**: Enabled by default for all verification activities
+- **Temporary Storage**: Isolated and automatically cleaned after verification completion

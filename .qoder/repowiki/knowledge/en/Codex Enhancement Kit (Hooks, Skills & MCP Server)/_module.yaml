@@ -1,6 +1,6 @@
 schema_version: 1
 module_path: ""
-title: pi-codex-kit — Additive OpenAI Codex Enhancement Kit
+title: Codex Enhancement Kit (Hooks, Skills & MCP Server)
 scope:
     - README.md
     - .gitignore

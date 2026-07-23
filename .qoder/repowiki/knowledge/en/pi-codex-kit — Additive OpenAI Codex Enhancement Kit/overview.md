@@ -1,1 +1,0 @@
-Standalone, copy-paste Codex enhancement kit that wires token-saving RTK hooks, a pi-lens MCP server, and slash-command skills into an existing Codex install without touching ~/.pi.

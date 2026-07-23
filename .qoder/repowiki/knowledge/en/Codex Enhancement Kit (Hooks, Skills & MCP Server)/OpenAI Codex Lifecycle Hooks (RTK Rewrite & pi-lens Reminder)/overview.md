@@ -1,0 +1,1 @@
+Two standalone Node.js hooks registered via Codex's `hooks.json` that rewrite Bash commands through RTK for token savings and inject a post-edit reminder to run pi-lens analysis.

@@ -1,6 +1,6 @@
 # pi-codex-kit
 
-**Version: 1.0.0** — [semver](https://semver.org/): each `feat:` → minor bump; breaking changes → major bump.
+**Version: 1.1.0** — [semver](https://semver.org/): each `feat:` → minor bump; breaking changes → major bump.
 
 Portable, **additive** Codex enhancement kit migrated from the pi coding agent. Gives OpenAI Codex the same code-tightening, code-quality, and token-saving behavior — with **zero linkage to `~/.pi`** and **no forced installation**.
 
@@ -40,7 +40,10 @@ pi-codex-kit/
 │   ├── rtk-pretooluse.mjs ← PreToolUse: rewrites shell cmds via rtk
 │   └── lens-reminder.mjs  ← PostToolUse: nudges pi-lens analysis
 ├── mcp-servers/
-│   └── README.md          ← pi-lens install + config.toml registration
+│   ├── README.md          ← server catalog + install
+│   ├── SECURITY.md        ← trust-boundary vetting (pi-lens)
+│   ├── wiki-server/       ← persistent knowledge-base (SQLite + embeddings)
+│   └── semgrep-server/    ← warm-cache security scanning
 └── skills/
     ├── README.md          ← skill catalog + install instructions
     ├── simplify/

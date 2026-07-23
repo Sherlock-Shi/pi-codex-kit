@@ -16,16 +16,8 @@
 - [skills/differential-review/agents/openai.yaml](file://skills/differential-review/agents/openai.yaml)
 - [skills/enforce-first/SKILL.md](file://skills/enforce-first/SKILL.md)
 - [skills/enforce-first/agents/openai.yaml](file://skills/enforce-first/agents/openai.yaml)
-- [skills/fp-check/SKILL.md](file://skills/fp-check/SKILL.md)
+- [skills/fp-check/SKILL.md](file://skills/fp-check/agents/openai.yaml)
 - [skills/fp-check/agents/openai.yaml](file://skills/fp-check/agents/openai.yaml)
-- [skills/pi-lens-ast-grep/SKILL.md](file://skills/pi-lens-ast-grep/SKILL.md)
-- [skills/pi-lens-ast-grep/agents/openai.yaml](file://skills/pi-lens-ast-grep/agents/openai.yaml)
-- [skills/pi-lens-lsp-navigation/SKILL.md](file://skills/pi-lens-lsp-navigation/SKILL.md)
-- [skills/pi-lens-lsp-navigation/agents/openai.yaml](file://skills/pi-lens-lsp-navigation/agents/openai.yaml)
-- [skills/pi-lens-write-ast-grep-rule/SKILL.md](file://skills/pi-lens-write-ast-grep-rule/SKILL.md)
-- [skills/pi-lens-write-ast-grep-rule/agents/openai.yaml](file://skills/pi-lens-write-ast-grep-rule/agents/openai.yaml)
-- [skills/pi-lens-write-tree-sitter-rule/SKILL.md](file://skills/pi-lens-write-tree-sitter-rule/SKILL.md)
-- [skills/pi-lens-write-tree-sitter-rule/agents/openai.yaml](file://skills/pi-lens-write-tree-sitter-rule/agents/openai.yaml)
 - [skills/request-review/SKILL.md](file://skills/request-review/SKILL.md)
 - [skills/request-review/agents/openai.yaml](file://skills/request-review/agents/openai.yaml)
 - [skills/respond-review/SKILL.md](file://skills/respond-review/SKILL.md)
@@ -37,6 +29,13 @@
 - [skills/verify-work/SKILL.md](file://skills/verify-work/SKILL.md)
 - [skills/verify-work/agents/openai.yaml](file://skills/verify-work/agents/openai.yaml)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Removed references to pi-lens related skills (pi-lens-ast-grep, pi-lens-lsp-navigation, pi-lens-write-ast-grep-rule, pi-lens-write-tree-sitter-rule) as they are no longer part of the standalone agent framework
+- Removed reference to coding-glue.md agent definition which has been dropped
+- Updated architecture diagrams to reflect only remaining standalone skills without internal dependencies
+- Streamlined examples to focus on core standalone capabilities
 
 ## Table of Contents
 1. Introduction
@@ -50,16 +49,18 @@
 9. Conclusion
 
 ## Introduction
-This document explains the agent framework architecture used to configure, manage, and integrate AI agents with skills. It focuses on OpenAI agent setup, prompt engineering patterns, model selection strategies, communication protocols between skills and agents, response processing, error handling, security considerations, rate limiting, and performance optimization for AI model interactions. The content is derived from the repository’s skill definitions and their associated OpenAI agent configuration files.
+This document explains the agent framework architecture used to configure, manage, and integrate AI agents with skills. It focuses on OpenAI agent setup, prompt engineering patterns, model selection strategies, communication protocols between skills and agents, response processing, error handling, security considerations, rate limiting, and performance optimization for AI model interactions. The content is derived from the repository's skill definitions and their associated OpenAI agent configuration files.
+
+**Updated** The framework now focuses exclusively on standalone skills without internal dependencies, removing previously included pi-lens related components and coding-glue integration.
 
 ## Project Structure
-The project organizes capabilities as “skills.” Each skill includes:
+The project organizes capabilities as "skills." Each skill includes:
 - A SKILL.md describing purpose, inputs, outputs, and usage.
 - An agents/openai.yaml defining how an OpenAI agent is configured for that skill.
 
 ```mermaid
 graph TB
-subgraph "Skills"
+subgraph "Standalone Skills"
 S1["audit-code"]
 S2["code-reviewer"]
 S3["deepen-architecture"]
@@ -67,15 +68,11 @@ S4["develop-tdd"]
 S5["differential-review"]
 S6["enforce-first"]
 S7["fp-check"]
-S8["pi-lens-ast-grep"]
-S9["pi-lens-lsp-navigation"]
-S10["pi-lens-write-ast-grep-rule"]
-S11["pi-lens-write-tree-sitter-rule"]
-S12["request-review"]
-S13["respond-review"]
-S14["simplify"]
-S15["variant-analysis"]
-S16["verify-work"]
+S8["request-review"]
+S9["respond-review"]
+S10["simplify"]
+S11["variant-analysis"]
+S12["verify-work"]
 end
 subgraph "Agent Configurations"
 C1["audit-code/agents/openai.yaml"]
@@ -85,15 +82,11 @@ C4["develop-tdd/agents/openai.yaml"]
 C5["differential-review/agents/openai.yaml"]
 C6["enforce-first/agents/openai.yaml"]
 C7["fp-check/agents/openai.yaml"]
-C8["pi-lens-ast-grep/agents/openai.yaml"]
-C9["pi-lens-lsp-navigation/agents/openai.yaml"]
-C10["pi-lens-write-ast-grep-rule/agents/openai.yaml"]
-C11["pi-lens-write-tree-sitter-rule/agents/openai.yaml"]
-C12["request-review/agents/openai.yaml"]
-C13["respond-review/agents/openai.yaml"]
-C14["simplify/agents/openai.yaml"]
-C15["variant-analysis/agents/openai.yaml"]
-C16["verify-work/agents/openai.yaml"]
+C8["request-review/agents/openai.yaml"]
+C9["respond-review/agents/openai.yaml"]
+C10["simplify/agents/openai.yaml"]
+C11["variant-analysis/agents/openai.yaml"]
+C12["verify-work/agents/openai.yaml"]
 end
 S1 --> C1
 S2 --> C2
@@ -107,10 +100,6 @@ S9 --> C9
 S10 --> C10
 S11 --> C11
 S12 --> C12
-S13 --> C13
-S14 --> C14
-S15 --> C15
-S16 --> C16
 ```
 
 **Diagram sources**
@@ -122,10 +111,6 @@ S16 --> C16
 - [skills/differential-review/agents/openai.yaml](file://skills/differential-review/agents/openai.yaml)
 - [skills/enforce-first/agents/openai.yaml](file://skills/enforce-first/agents/openai.yaml)
 - [skills/fp-check/agents/openai.yaml](file://skills/fp-check/agents/openai.yaml)
-- [skills/pi-lens-ast-grep/agents/openai.yaml](file://skills/pi-lens-ast-grep/agents/openai.yaml)
-- [skills/pi-lens-lsp-navigation/agents/openai.yaml](file://skills/pi-lens-lsp-navigation/agents/openai.yaml)
-- [skills/pi-lens-write-ast-grep-rule/agents/openai.yaml](file://skills/pi-lens-write-ast-grep-rule/agents/openai.yaml)
-- [skills/pi-lens-write-tree-sitter-rule/agents/openai.yaml](file://skills/pi-lens-write-tree-sitter-rule/agents/openai.yaml)
 - [skills/request-review/agents/openai.yaml](file://skills/request-review/agents/openai.yaml)
 - [skills/respond-review/agents/openai.yaml](file://skills/respond-review/agents/openai.yaml)
 - [skills/simplify/agents/openai.yaml](file://skills/simplify/agents/openai.yaml)
@@ -137,14 +122,16 @@ S16 --> C16
 - [skills/README.md](file://skills/README.md)
 
 ## Core Components
-- Skills: Encapsulate domain-specific workflows (e.g., code review, TDD development, AST rule generation). Each skill defines its intent and expected interaction via a SKILL.md.
-- Agent Configuration: Each skill ships an agents/openai.yaml that configures an OpenAI agent tailored to the skill’s task. These files define model selection, prompts, and behavior parameters.
-- Integration Pattern: The runtime loads a skill’s SKILL.md for user-facing instructions and uses the corresponding openai.yaml to instantiate and run the agent.
+- **Skills**: Encapsulate domain-specific workflows (e.g., code review, TDD development, AST rule generation). Each skill defines its intent and expected interaction via a SKILL.md.
+- **Agent Configuration**: Each skill ships an agents/openai.yaml that configures an OpenAI agent tailored to the skill's task. These files define model selection, prompts, and behavior parameters.
+- **Integration Pattern**: The runtime loads a skill's SKILL.md for user-facing instructions and uses the corresponding openai.yaml to instantiate and run the agent.
 
 Key responsibilities:
 - Skill definition: Purpose, inputs, outputs, and usage guidance.
 - Agent configuration: Model choice, system prompts, temperature/top_p, and other parameters.
 - Orchestration: Invoking the configured agent with context provided by the skill.
+
+**Updated** The framework now emphasizes standalone skills without internal dependencies, focusing on self-contained capabilities rather than integrated tooling components.
 
 **Section sources**
 - [skills/audit-code/SKILL.md](file://skills/audit-code/SKILL.md)
@@ -161,14 +148,6 @@ Key responsibilities:
 - [skills/enforce-first/agents/openai.yaml](file://skills/enforce-first/agents/openai.yaml)
 - [skills/fp-check/SKILL.md](file://skills/fp-check/SKILL.md)
 - [skills/fp-check/agents/openai.yaml](file://skills/fp-check/agents/openai.yaml)
-- [skills/pi-lens-ast-grep/SKILL.md](file://skills/pi-lens-ast-grep/SKILL.md)
-- [skills/pi-lens-ast-grep/agents/openai.yaml](file://skills/pi-lens-ast-grep/agents/openai.yaml)
-- [skills/pi-lens-lsp-navigation/SKILL.md](file://skills/pi-lens-lsp-navigation/SKILL.md)
-- [skills/pi-lens-lsp-navigation/agents/openai.yaml](file://skills/pi-lens-lsp-navigation/agents/openai.yaml)
-- [skills/pi-lens-write-ast-grep-rule/SKILL.md](file://skills/pi-lens-write-ast-grep-rule/SKILL.md)
-- [skills/pi-lens-write-ast-grep-rule/agents/openai.yaml](file://skills/pi-lens-write-ast-grep-rule/agents/openai.yaml)
-- [skills/pi-lens-write-tree-sitter-rule/SKILL.md](file://skills/pi-lens-write-tree-sitter-rule/SKILL.md)
-- [skills/pi-lens-write-tree-sitter-rule/agents/openai.yaml](file://skills/pi-lens-write-tree-sitter-rule/agents/openai.yaml)
 - [skills/request-review/SKILL.md](file://skills/request-review/SKILL.md)
 - [skills/request-review/agents/openai.yaml](file://skills/request-review/agents/openai.yaml)
 - [skills/respond-review/SKILL.md](file://skills/respond-review/SKILL.md)
@@ -183,8 +162,8 @@ Key responsibilities:
 ## Architecture Overview
 The agent framework follows a skill-driven pattern:
 - User invokes a skill.
-- The runtime reads the skill’s SKILL.md for behavior and context.
-- The runtime loads the skill’s agents/openai.yaml to configure the OpenAI agent.
+- The runtime reads the skill's SKILL.md for behavior and context.
+- The runtime loads the skill's agents/openai.yaml to configure the OpenAI agent.
 - The agent executes using the specified model and prompts, returning structured responses consumed by the skill.
 
 ```mermaid
@@ -217,7 +196,7 @@ Runtime-->>User : "Present result per skill"
 - Model selection strategy:
   - Choose models based on capability needs (reasoning depth, speed, cost).
   - Use stronger models for complex analysis (e.g., variant analysis, deepening architecture).
-  - Use faster, lighter models for routine tasks (e.g., navigation, simple checks).
+  - Use faster, lighter models for routine tasks (e.g., simple checks, basic reviews).
 - Prompt engineering patterns:
   - System-level instructions to constrain output format and scope.
   - Task-specific guidance embedded in prompts or referenced documents.
@@ -226,8 +205,9 @@ Runtime-->>User : "Present result per skill"
 Examples across skills:
 - Code-focused skills (audit-code, code-reviewer, enforce-first) emphasize precision and consistency.
 - Analytical skills (deepen-architecture, differential-review, fp-check) require deeper reasoning and structured evidence.
-- Tool-oriented skills (pi-lens-* variants) focus on generating rules and navigating codebases.
 - Workflow skills (develop-tdd, simplify, verify-work, request-review, respond-review) orchestrate multi-step processes.
+
+**Updated** Examples now focus on standalone capabilities without referencing removed pi-lens tooling components.
 
 **Section sources**
 - [skills/audit-code/agents/openai.yaml](file://skills/audit-code/agents/openai.yaml)
@@ -237,10 +217,6 @@ Examples across skills:
 - [skills/differential-review/agents/openai.yaml](file://skills/differential-review/agents/openai.yaml)
 - [skills/enforce-first/agents/openai.yaml](file://skills/enforce-first/agents/openai.yaml)
 - [skills/fp-check/agents/openai.yaml](file://skills/fp-check/agents/openai.yaml)
-- [skills/pi-lens-ast-grep/agents/openai.yaml](file://skills/pi-lens-ast-grep/agents/openai.yaml)
-- [skills/pi-lens-lsp-navigation/agents/openai.yaml](file://skills/pi-lens-lsp-navigation/agents/openai.yaml)
-- [skills/pi-lens-write-ast-grep-rule/agents/openai.yaml](file://skills/pi-lens-write-ast-grep-rule/agents/openai.yaml)
-- [skills/pi-lens-write-tree-sitter-rule/agents/openai.yaml](file://skills/pi-lens-write-tree-sitter-rule/agents/openai.yaml)
 - [skills/request-review/agents/openai.yaml](file://skills/request-review/agents/openai.yaml)
 - [skills/respond-review/agents/openai.yaml](file://skills/respond-review/agents/openai.yaml)
 - [skills/simplify/agents/openai.yaml](file://skills/simplify/agents/openai.yaml)
@@ -254,7 +230,7 @@ Examples across skills:
 - Request construction:
   - The runtime builds a request payload including model selection, system/user messages, and parameters.
 - Response processing:
-  - The runtime parses the response according to the skill’s expectations (structured text, artifacts, or tool calls).
+  - The runtime parses the response according to the skill's expectations (structured text, artifacts, or tool calls).
   - The skill may post-process results into actionable outputs (reports, diffs, suggestions).
 
 ```mermaid
@@ -294,8 +270,6 @@ Deliver --> End(["End"])
   - Log request metadata (model, tokens, latency) without sensitive data.
   - Surface actionable errors to users with clear next steps.
 
-[No sources needed since this section provides general guidance]
-
 ### Security Considerations
 - Secrets management:
   - Store API keys securely; never embed secrets in configuration files.
@@ -306,8 +280,6 @@ Deliver --> End(["End"])
 - Access control:
   - Restrict which skills can perform write operations or external calls.
 
-[No sources needed since this section provides general guidance]
-
 ### Rate Limiting and Cost Control
 - Throttling:
   - Enforce per-user and global rate limits at the runtime layer.
@@ -315,8 +287,6 @@ Deliver --> End(["End"])
   - Track token usage per skill invocation; cap costs per session or project.
 - Model tiering:
   - Route low-priority tasks to cheaper models; reserve premium models for high-value work.
-
-[No sources needed since this section provides general guidance]
 
 ### Performance Optimization
 - Prompt efficiency:
@@ -327,8 +297,6 @@ Deliver --> End(["End"])
   - Run independent skills concurrently where safe.
 - Caching:
   - Cache deterministic results (e.g., static analysis outputs) to avoid redundant model calls.
-
-[No sources needed since this section provides general guidance]
 
 ## Dependency Analysis
 The dependency graph shows each skill depending on its own OpenAI agent configuration. There are no cross-skill dependencies in the configuration layer; integration occurs at the runtime level.
@@ -342,10 +310,6 @@ TDD["develop-tdd/SKILL.md"] --> TDDCfg["develop-tdd/agents/openai.yaml"]
 Diff["differential-review/SKILL.md"] --> DFCfg["differential-review/agents/openai.yaml"]
 Enforce["enforce-first/SKILL.md"] --> EFCfg["enforce-first/agents/openai.yaml"]
 FP["fp-check/SKILL.md"] --> FPCfg["fp-check/agents/openai.yaml"]
-AstGrep["pi-lens-ast-grep/SKILL.md"] --> AGCfg["pi-lens-ast-grep/agents/openai.yaml"]
-LSP["pi-lens-lsp-navigation/SKILL.md"] --> LCfg["pi-lens-lsp-navigation/agents/openai.yaml"]
-WriteAG["pi-lens-write-ast-grep-rule/SKILL.md"] --> WAGCfg["pi-lens-write-ast-grep-rule/agents/openai.yaml"]
-WriteTS["pi-lens-write-tree-sitter-rule/SKILL.md"] --> WTCfg["pi-lens-write-tree-sitter-rule/agents/openai.yaml"]
 ReqRev["request-review/SKILL.md"] --> RRCfg["request-review/agents/openai.yaml"]
 RespRev["respond-review/SKILL.md"] --> SRCfg["respond-review/agents/openai.yaml"]
 Simplify["simplify/SKILL.md"] --> SCfg["simplify/agents/openai.yaml"]
@@ -368,14 +332,6 @@ Verify["verify-work/SKILL.md"] --> VFCfg["verify-work/agents/openai.yaml"]
 - [skills/enforce-first/agents/openai.yaml](file://skills/enforce-first/agents/openai.yaml)
 - [skills/fp-check/SKILL.md](file://skills/fp-check/SKILL.md)
 - [skills/fp-check/agents/openai.yaml](file://skills/fp-check/agents/openai.yaml)
-- [skills/pi-lens-ast-grep/SKILL.md](file://skills/pi-lens-ast-grep/SKILL.md)
-- [skills/pi-lens-ast-grep/agents/openai.yaml](file://skills/pi-lens-ast-grep/agents/openai.yaml)
-- [skills/pi-lens-lsp-navigation/SKILL.md](file://skills/pi-lens-lsp-navigation/SKILL.md)
-- [skills/pi-lens-lsp-navigation/agents/openai.yaml](file://skills/pi-lens-lsp-navigation/agents/openai.yaml)
-- [skills/pi-lens-write-ast-grep-rule/SKILL.md](file://skills/pi-lens-write-ast-grep-rule/SKILL.md)
-- [skills/pi-lens-write-ast-grep-rule/agents/openai.yaml](file://skills/pi-lens-write-ast-grep-rule/agents/openai.yaml)
-- [skills/pi-lens-write-tree-sitter-rule/SKILL.md](file://skills/pi-lens-write-tree-sitter-rule/SKILL.md)
-- [skills/pi-lens-write-tree-sitter-rule/agents/openai.yaml](file://skills/pi-lens-write-tree-sitter-rule/agents/openai.yaml)
 - [skills/request-review/SKILL.md](file://skills/request-review/SKILL.md)
 - [skills/request-review/agents/openai.yaml](file://skills/request-review/agents/openai.yaml)
 - [skills/respond-review/SKILL.md](file://skills/respond-review/SKILL.md)
@@ -387,6 +343,8 @@ Verify["verify-work/SKILL.md"] --> VFCfg["verify-work/agents/openai.yaml"]
 - [skills/verify-work/SKILL.md](file://skills/verify-work/SKILL.md)
 - [skills/verify-work/agents/openai.yaml](file://skills/verify-work/agents/openai.yaml)
 
+**Updated** The dependency graph now reflects only standalone skills without internal dependencies, removing all pi-lens related components and coding-glue integration.
+
 **Section sources**
 - [skills/README.md](file://skills/README.md)
 
@@ -395,8 +353,6 @@ Verify["verify-work/SKILL.md"] --> VFCfg["verify-work/agents/openai.yaml"]
 - Use model tiering to balance quality and cost.
 - Implement caching for stable, deterministic outputs.
 - Monitor latency and throughput; adjust concurrency and timeouts accordingly.
-
-[No sources needed since this section provides general guidance]
 
 ## Troubleshooting Guide
 - Symptom: Frequent rate limit errors
@@ -408,9 +364,7 @@ Verify["verify-work/SKILL.md"] --> VFCfg["verify-work/agents/openai.yaml"]
 - Symptom: Security warnings
   - Action: Redact sensitive data, validate outputs, and restrict write permissions.
 
-[No sources needed since this section provides general guidance]
-
 ## Conclusion
-The agent framework leverages a clean separation between skill definitions and OpenAI agent configurations. This design enables consistent prompt engineering, flexible model selection, and robust integration patterns. By applying the recommended practices for security, rate limiting, and performance, teams can scale AI-assisted workflows reliably across diverse coding tasks.
+The agent framework leverages a clean separation between skill definitions and OpenAI agent configurations. This design enables consistent prompt engineering, flexible model selection, and robust integration patterns. By focusing on standalone skills without internal dependencies, the framework provides a streamlined approach to AI-assisted development workflows. Teams can scale these capabilities reliably across diverse coding tasks while maintaining security, performance, and cost efficiency.
 
-[No sources needed since this section summarizes without analyzing specific files]
+**Updated** The framework now emphasizes simplicity and independence, making it easier to maintain and extend individual skills without complex interdependencies.

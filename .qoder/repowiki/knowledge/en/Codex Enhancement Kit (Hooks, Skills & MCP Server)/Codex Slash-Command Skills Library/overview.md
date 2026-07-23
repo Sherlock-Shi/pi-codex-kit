@@ -1,0 +1,1 @@
+Self-contained Codex skill definitions for code review, security analysis, TDD, and pi-lens authoring workflows, each installable by copying a directory into ~/.codex/skills/.

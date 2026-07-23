@@ -94,3 +94,21 @@ It is safe to approve pi-lens tool calls for nonpublic/proprietary code. If your
 
 1. Remove the `[mcp_servers.pi-lens]` block from `~/.codex/config.toml`.
 2. Delete `~/.codex/vendor/pi-lens/`.
+
+---
+
+## wiki-server
+
+Persistent knowledge-base server with SQLite + FTS5 + local vector embeddings. Provides 6 `wiki_*` tools for building and querying a structured, interlinked wiki (based on [Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)).
+
+Full install instructions: [wiki-server/README.md](wiki-server/README.md)
+Security vetting: [wiki-server/SECURITY.md](wiki-server/SECURITY.md)
+
+---
+
+## semgrep-server
+
+Warm-cache semgrep security scanning. Wraps the `semgrep` CLI with result caching to eliminate cold-start latency. Provides 4 `semgrep_*` tools. Zero npm dependencies.
+
+Full install instructions: [semgrep-server/README.md](semgrep-server/README.md)
+Security vetting: [semgrep-server/SECURITY.md](semgrep-server/SECURITY.md)
