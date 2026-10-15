@@ -1,5 +1,15 @@
 # pi-codex-kit
 
+> **At a glance** · A personal tool-building project. I took features I found useful in the pi coding agent and the Qoder desktop app and CLI, and brought them to OpenAI Codex as add-on hooks, MCP servers and skills. Everything is additive: nothing is installed unless you copy it in.
+
+| Component | What it adds | Count |
+|---|---|---|
+| Hooks | Shell-command rewriting (RTK), code-quality reminders, a static security check, and a pre-push security scan | 3 Codex hooks + 1 git hook |
+| MCP servers | Knowledge-base wiki and warm-cache security scanning (built for this kit), plus setup for the third-party pi-lens code-quality server (16 tools) | 2 built + 1 integrated |
+| Skills | Review, TDD, security audit, simplification and more | 20 (8 adapted from open-source projects, [credited](#acknowledgments)) |
+
+**Status (Oct 2026):** several of these features now ship as official extensions, so the kit mainly documents the approach. Each part keeps its own install, verification and rollback steps.
+
 **Version: 1.2.0** — [semver](https://semver.org/): each `feat:` → minor bump; breaking changes → major bump.
 
 Portable, **additive** Codex enhancement kit migrated from the pi coding agent. Gives OpenAI Codex the same code-tightening, code-quality, and token-saving behavior — with **zero linkage to `~/.pi`** and **no forced installation**.
@@ -38,7 +48,9 @@ pi-codex-kit/
 ├── hooks/
 │   ├── README.md          ← install instructions
 │   ├── rtk-pretooluse.mjs ← PreToolUse: rewrites shell cmds via rtk
-│   └── lens-reminder.mjs  ← PostToolUse: nudges pi-lens analysis
+│   ├── lens-reminder.mjs  ← PostToolUse: nudges pi-lens analysis
+│   ├── security-l1.mjs    ← PostToolUse: L1 static security check
+│   └── pre-push           ← git hook: L3 semgrep scan before push
 ├── mcp-servers/
 │   ├── README.md          ← server catalog + install
 │   ├── SECURITY.md        ← trust-boundary vetting (pi-lens)
@@ -49,7 +61,7 @@ pi-codex-kit/
     ├── simplify/
     ├── audit-code/
     ├── develop-tdd/
-    └── ... (19 skills total)
+    └── ... (20 skills total)
 ```
 
 ---
@@ -134,13 +146,23 @@ This kit adapts and builds upon the following works:
 | Semgrep | [Semgrep / r2c](https://semgrep.dev) | LGPL-2.1 | Security scanning engine wrapped by `semgrep-server` |
 | transformers.js | [Xenova / HuggingFace](https://github.com/xenova/transformers.js) | Apache-2.0 | Local embedding model runtime for `wiki-server` |
 | all-MiniLM-L6-v2 | [Sentence-Transformers](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) | Apache-2.0 | 384-dim embedding model for wiki vector search |
+| differential-review, fp-check, variant-analysis skills | [Trail of Bits](https://github.com/trailofbits/skills) | CC BY-SA 4.0 | Skill text and reference files (partly copied; folders keep CC BY-SA 4.0) |
+| code-reviewer skill | [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) | Apache-2.0 | Skill copied unchanged |
+| pi-lens-* skills | [Apostolos Mantzaris](https://github.com/apmantza/pi-lens) | MIT | Four authoring and navigation skills, edited to use the MCP tools |
+| Codebase-design and TDD skills | [Matt Pocock](https://github.com/mattpocock/skills) | MIT | Module/interface/seam vocabulary and mocking examples in `deepen-architecture` and `develop-tdd` |
 | Semver versioning convention | [bigpowers](https://github.com/danielvm-git/bigpowers) by Daniel V. | — | Version policy (feat → minor, breaking → major, MVP → 1.0.0) |
 | TDD vertical slices | Kent Beck, *Test-Driven Development: By Example* | — | Red-green-refactor workflow in `develop-tdd` |
 
-All adaptations are restructured for standalone Codex use. No original code is copied verbatim — skills are rewritten as generic agent instructions.
+The hooks, `wiki-server`, `semgrep-server` and 12 of the 20 skills were written for this kit. Eight skills are copied or closely adapted from the projects above and keep their original licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the `NOTICE.md` in each of those folders. Ideas taken from the books are paraphrased, not copied.
 
 ---
 
 ## Not included (deliberately)
 
 context-mode, pi-subagents, pi-dynamic-workflows, pi-hermes-memory, pi-permission-system — pi-internal APIs with no clean Codex equivalent.
+
+---
+
+## License
+
+My own code and documentation are licensed under the [MIT license](LICENSE). Folders adapted from other projects keep their original licenses: CC BY-SA 4.0 (`differential-review`, `fp-check`, `variant-analysis`), Apache-2.0 (`code-reviewer`) and MIT with the original copyright (`pi-lens-*`; parts of `deepen-architecture` and `develop-tdd`). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

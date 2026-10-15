@@ -65,6 +65,7 @@ Open Codex and run `/skills` — your installed skills should appear in the list
 
 - The `pi-lens-*` skills require the pi-lens MCP server (local-only, no network at runtime). See `../mcp-servers/README.md` and `../mcp-servers/SECURITY.md`.
 - The `knowledge-engine` skill requires the wiki-server MCP (v2). See `../mcp-servers/wiki-server/README.md`.
+- Eight skills (`differential-review`, `fp-check`, `variant-analysis`, `code-reviewer` and the four `pi-lens-*` skills) are adapted from other open-source projects and keep their own licenses; see each folder's `NOTICE.md` and [`../THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md).
 - Skills are purely additive — copying a new folder never affects existing skills.
 
 ## Rollback

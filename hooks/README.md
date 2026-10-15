@@ -6,7 +6,7 @@ Codex lifecycle hooks for token-saving, code-quality, and progressive security s
 
 | File | Event | What it does |
 |------|-------|--------------|
-| `rtk-pretooluse.mjs` | `PreToolUse` (Bash) | Rewrites shell commands through [RTK](https://github.com/rtk-ai/rtk) for 60–90% token savings (e.g. `git status` → `rtk git status`). Non-blocking: if rtk is missing or errors, your original command runs unchanged. |
+| `rtk-pretooluse.mjs` | `PreToolUse` (Bash) | Rewrites shell commands through [RTK](https://github.com/rtk-ai/rtk) to save tokens (e.g. `git status` → `rtk git status`). Non-blocking: if rtk is missing or errors, your original command runs unchanged. |
 | `lens-reminder.mjs` | `PostToolUse` (apply_patch/Edit/Write) | Injects a reminder to run `pilens_analyze` on edited files. After 5+ edits, also nudges L2 security scan. Disable with `CODEX_KIT_LENS_REMINDER=0`. |
 | `security-l1.mjs` | `PostToolUse` (apply_patch/Edit/Write) | **L1 Static Check** — pattern-matches edited code for high-risk patterns (eval, hardcoded secrets, SQL injection, XSS). Near-zero cost, fires automatically. Disable with `CODEX_KIT_SECURITY_L1=0`. |
 | `pre-push` | Git `pre-push` | **L3 Deep Scan** — runs semgrep on changed files before push. Blocks on HIGH findings. Bypass: `git push --no-verify`. |
